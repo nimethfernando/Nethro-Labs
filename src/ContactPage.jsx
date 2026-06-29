@@ -108,7 +108,7 @@ function InfoCard({ item }) {
 }
 
 // ── App ────────────────────────────────────────────────────────────────────
-export default function ContactPage() {
+export default function ContactPage({ onNavigate }) {
   const [navHover, setNavHover] = useState(null);
   const [focused, setFocused] = useState(null);
   const [submitted, setSubmitted] = useState(false);
@@ -146,6 +146,7 @@ export default function ContactPage() {
           background: rgba(10,15,30,0.88); backdrop-filter: blur(14px);
           border-bottom: 1px solid rgba(0,212,255,0.1);
         }
+        .cn-logo { cursor: pointer; }
         .cn-nav-links { display:flex; gap:32px; list-style:none; }
         .cn-nav-link {
           font-size:14px; font-weight:500; letter-spacing:.3px;
@@ -244,27 +245,6 @@ export default function ContactPage() {
         }
         .cn-badge-text { font-size:14px; color:#B8D4E8; line-height:1.6; }
 
-        /* ── FOOTER ── */
-        .cn-footer {
-          background:#060A14; border-top:1px solid rgba(255,255,255,0.06);
-          padding:40px 56px;
-          display:flex; align-items:center; justify-content:space-between;
-          flex-wrap:wrap; gap:16px;
-        }
-        .cn-logo {
-          font-family:'Space Grotesk','Inter',sans-serif;
-          font-size:22px; font-weight:700; letter-spacing:-.5px; color:#F0F8FF;
-        }
-        .cn-footer-note { font-size:13px; color:#4A6080; text-decoration:none; }
-
-        /* ── SUCCESS ── */
-        .cn-success { text-align:center; padding:48px 0; }
-        .cn-success-icon { font-size:52px; margin-bottom:24px; color:#4DFFB4; }
-        .cn-success-title {
-          font-family:'Space Grotesk','Inter',sans-serif;
-          font-size:26px; font-weight:700; margin-bottom:12px;
-        }
-
         /* ── RESPONSIVE ── */
         @media (max-width: 900px) {
           .cn-nav { padding: 0 24px; }
@@ -283,7 +263,7 @@ export default function ContactPage() {
 
       {/* NAV */}
       <nav className="cn-nav">
-        <div className="cn-logo">Nethro<span style={{ color:"#00D4FF" }}>.</span>Labs</div>
+        <div className="cn-logo" onClick={() => onNavigate("home")}>Nethro<span style={{ color:"#00D4FF" }}>.</span>Labs</div>
         <ul className="cn-nav-links">
           {["Services","About","Case Studies","Contact"].map(link => (
             <li key={link}>
@@ -292,12 +272,22 @@ export default function ContactPage() {
                 style={{ color: navHover === link || link === "Contact" ? "#00D4FF" : "#B8D4E8" }}
                 onMouseEnter={() => setNavHover(link)}
                 onMouseLeave={() => setNavHover(null)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (link === "Contact") {
+                    onNavigate("contact");
+                  } else if (link === "Services") {
+                    onNavigate("home", "services");
+                  } else {
+                    onNavigate("home");
+                  }
+                }}
                 href="#"
               >{link}</a>
             </li>
           ))}
         </ul>
-        <button className="cn-nav-cta">Get a Quote</button>
+        <button className="cn-nav-cta" onClick={() => onNavigate("contact")}>Get a Quote</button>
       </nav>
 
       {/* HEADER */}
@@ -409,12 +399,12 @@ export default function ContactPage() {
       </div>
 
       {/* FOOTER */}
-      <footer className="cn-footer">
-        <div className="cn-logo">Nethro<span style={{ color:"#00D4FF" }}>.</span>Labs</div>
+      <footer style={{ background: "#060A14", borderTop: "1px solid rgba(255,255,255,0.06)", padding: "40px 56px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
+        <div className="cn-logo" onClick={() => onNavigate("home")}>Nethro<span style={{ color:"#00D4FF" }}>.</span>Labs</div>
         <div className="cn-footer-note">© {new Date().getFullYear()} Nethro Labs. All rights reserved.</div>
         <div style={{ display:"flex", gap:24 }}>
           {["Privacy","Terms","LinkedIn"].map(l => (
-            <a key={l} href="#" className="cn-footer-note">{l}</a>
+            <a key={l} href="#" className="cn-footer-note" style={{ textDecoration: "none" }}>{l}</a>
           ))}
         </div>
       </footer>
