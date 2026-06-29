@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import ContactPage from "./ContactPage";
 import LoginPage from "./components/LoginPage";
+import AdminDashboard from "./components/AdminDashboard";
 
 function NeuralCanvas() {
   const canvasRef = useRef(null);
@@ -86,6 +87,88 @@ function ServiceCard({ service }) {
   );
 }
 
+// Dedicated inline panel for first-time password configuration
+function InitialPasswordSetup({ token, onSetupSuccess }) {
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      setError("Passwords do not match matching criteria.");
+      return;
+    }
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/setup-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ newPassword }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to update security credentials.");
+      }
+
+      onSetupSuccess();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ ...styles.container, display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
+      <div style={{ color: "#FFF", padding: 40, background: "#111827", borderRadius: 12, border: "1px solid #1F2937", maxWidth: "440px", width: "90%" }}>
+        <h2 style={{ color: "#00D4FF", margin: "0 0 8px 0", fontSize: "22px" }}>Initialize Security Credentials</h2>
+        <p style={{ color: "#9CA3AF", fontSize: "14px", margin: "0 0 24px 0", lineHeight: "1.4" }}>
+          This is your first terminal login session. Please configure a personal secret password to proceed.
+        </p>
+
+        {error && <div style={{ color: "#EF4444", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", padding: "12px", borderRadius: "8px", fontSize: "14px", marginBottom: "16px" }}>{error}</div>}
+
+        <form onSubmit={handlePasswordSubmit}>
+          <div style={{ marginBottom: "16px" }}>
+            <label style={{ display: "block", fontSize: "13px", color: "#9CA3AF", marginBottom: "6px" }}>New Secure Password</label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              style={{ width: "100%", padding: "12px", background: "#1F2937", border: "1px solid #374151", borderRadius: "8px", color: "#FFF", boxSizing: "border-box" }}
+              placeholder="••••••••"
+              required
+            />
+          </div>
+          <div style={{ marginBottom: "24px" }}>
+            <label style={{ display: "block", fontSize: "13px", color: "#9CA3AF", marginBottom: "6px" }}>Confirm New Password</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              style={{ width: "100%", padding: "12px", background: "#1F2937", border: "1px solid #374151", borderRadius: "8px", color: "#FFF", boxSizing: "border-box" }}
+              placeholder="••••••••"
+              required
+            />
+          </div>
+          <button type="submit" disabled={loading} style={{ ...styles.btnPrimary, width: "100%" }}>
+            {loading ? "Updating Master Matrix..." : "Save Credentials & Connect"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [view, setView] = useState("home");
   const [currentUser, setCurrentUser] = useState(null);
@@ -100,8 +183,10 @@ export default function App() {
     setCurrentUser(user);
     setAuthToken(token);
     
-    // Automatic role-based redirection evaluated from the API response record
-    if (user.role === "admin") {
+    // Check if backend payload specifies that a first-time password setup is intercepted
+    if (user.requiresPasswordReset) {
+      navigateTo("setup-password");
+    } else if (user.role === "admin") {
       navigateTo("admin-dashboard");
     } else {
       navigateTo("client-dashboard");
@@ -121,21 +206,46 @@ export default function App() {
   ];
 
   if (view === "login") {
-    return <LoginPage onLoginSuccess={handleLoginSuccess} navigateTo={navigateTo} />;
+    // Intercept login callback properties to map setup conditions
+    return (
+      <LoginPage 
+        onLoginSuccess={(user, token) => {
+          // If the payload returns a flat setup property, embed it to user object
+          const checkResponse = arguments[0]; 
+          if (checkResponse && checkResponse.requiresPasswordReset) {
+            handleLoginSuccess({ ...checkResponse.user, requiresPasswordReset: true }, arguments[1]);
+          } else {
+            handleLoginSuccess(user, token);
+          }
+        }} 
+        navigateTo={navigateTo} 
+      />
+    );
   }
 
   if (view === "contact") {
     return <ContactPage navigateTo={navigateTo} />;
   }
 
-  // Dashboard layout screens
-  if (view === "admin-dashboard" || view === "client-dashboard") {
+  if (view === "admin-dashboard") {
+    return <AdminDashboard token={authToken} onLogout={handleLogout} />;
+  }
+
+  if (view === "setup-password") {
+    return (
+      <InitialPasswordSetup 
+        token={authToken} 
+        onSetupSuccess={() => navigateTo("client-dashboard")} 
+      />
+    );
+  }
+
+  // Client workspace layout screen
+  if (view === "client-dashboard") {
     return (
       <div style={{ ...styles.container, justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
         <div style={{ color: "#FFF", textAlign: "center", padding: 40, background: "#111827", borderRadius: 12, border: "1px solid #1F2937", maxWidth: "500px", width: "90%" }}>
-          <h2 style={{ color: "#00D4FF", marginBottom: "16px" }}>
-            {currentUser?.role === "admin" ? "Administrative Central Terminal" : "Client Operations Workspace"}
-          </h2>
+          <h2 style={{ color: "#00D4FF", marginBottom: "16px" }}>Client Operations Workspace</h2>
           <p style={{ color: "#9CA3AF", marginBottom: "24px", fontSize: "15px" }}>
             Authenticated session active for: <strong>{currentUser?.name}</strong> ({currentUser?.email})
           </p>
