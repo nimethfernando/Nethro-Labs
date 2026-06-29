@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-// Import the ContactPage component
 import ContactPage from "./ContactPage";
+import LoginPage from "./components/LoginPage";
 
-// ── Neural Network Canvas ──────────────────────────────────────────────────
 function NeuralCanvas() {
   const canvasRef = useRef(null);
 
@@ -37,551 +36,158 @@ function NeuralCanvas() {
         n.pulse += 0.025;
         if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
         if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r + Math.sin(n.pulse) * 0.4, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0, 212, 255, ${0.15 + Math.sin(n.pulse) * 0.05})`;
+        ctx.fill();
       });
 
-      // Draw edges
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
           const dx = nodes[i].x - nodes[j].x;
           const dy = nodes[i].y - nodes[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 140) {
+
+          if (dist < 110) {
             ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
             ctx.lineTo(nodes[j].x, nodes[j].y);
-            const alpha = (1 - dist / 140) * 0.25;
-            ctx.strokeStyle = `rgba(0,212,255,${alpha})`;
-            ctx.lineWidth = 0.8;
+            ctx.strokeStyle = `rgba(0, 212, 255, ${0.06 * (1 - dist / 110)})`;
+            ctx.lineWidth = 0.6;
             ctx.stroke();
           }
         }
       }
 
-      // Draw nodes
-      nodes.forEach((n) => {
-        const glow = Math.sin(n.pulse) * 0.4 + 0.6;
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, n.r * glow, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0,212,255,${0.5 * glow})`;
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, n.r * 0.5, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(180,230,255,0.9)`;
-        ctx.fill();
-      });
-
       animId = requestAnimationFrame(draw);
     };
+
     draw();
 
     return () => {
-      cancelAnimationFrame(animId);
       window.removeEventListener("resize", resize);
+      cancelAnimationFrame(animId);
     };
   }, []);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      style={{
-        position: "absolute",
-        inset: 0,
-        width: "100%",
-        height: "100%",
-        opacity: 0.55,
-      }}
-    />
-  );
+  return <canvas ref={canvasRef} style={styles.canvas} />;
 }
 
-// ── Data ───────────────────────────────────────────────────────────────────
-const services = [
-  {
-    icon: "⬡",
-    label: "Cloud Infrastructure",
-    desc: "Scalable, secure cloud environments engineered for uptime. From migration to multi-cloud orchestration.",
-    accent: "#00D4FF",
-  },
-  {
-    icon: "⬡",
-    label: "Cybersecurity",
-    desc: "Threat detection, zero-trust architecture, and 24/7 monitoring to keep your systems airtight.",
-    accent: "#4DFFB4",
-  },
-  {
-    icon: "⬡",
-    label: "Network Solutions",
-    desc: "Enterprise networking — SD-WAN, VPNs, routing and switching — optimized for performance.",
-    accent: "#A78BFA",
-  },
-  {
-    icon: "⬡",
-    label: "Managed IT Services",
-    desc: "Your full-stack IT department, on demand. We handle the ops so your team can ship.",
-    accent: "#FFB347",
-  },
-  {
-    icon: "⬡",
-    label: "Software Development",
-    desc: "Custom applications built to integrate with your stack — from MVPs to enterprise platforms.",
-    accent: "#FF6B9D",
-  },
-  {
-    icon: "⬡",
-    label: "Data & Analytics",
-    desc: "Pipelines, dashboards, and intelligence layers that turn your data into decisions.",
-    accent: "#00D4FF",
-  },
-];
-
-const stats = [
-  { value: "200+", label: "Clients Served" },
-  { value: "99.9%", label: "Uptime SLA" },
-  { value: "15+", label: "Years Experience" },
-  { value: "24/7", label: "Support Coverage" },
-];
-
-// ── Styles ─────────────────────────────────────────────────────────────────
-const styles = {
-  root: {
-    fontFamily: "'Inter', system-ui, sans-serif",
-    background: "#0A0F1E",
-    color: "#F0F8FF",
-    minHeight: "100vh",
-    width: "100%",
-    overflowX: "hidden",
-  },
-  // NAV
-  nav: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 100,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    background: "rgba(10,15,30,0.85)",
-    backdropFilter: "blur(12px)",
-    borderBottom: "1px solid rgba(0,212,255,0.1)",
-  },
-  logo: {
-    fontFamily: "'Space Grotesk', 'Inter', sans-serif",
-    fontSize: 22,
-    fontWeight: 700,
-    letterSpacing: "-0.5px",
-    color: "#F0F8FF",
-    cursor: "pointer",
-  },
-  logoDot: { color: "#00D4FF" },
-  navLinks: {
-    display: "flex",
-    gap: 32,
-    listStyle: "none",
-    margin: 0,
-    padding: 0,
-  },
-  navLink: {
-    color: "#B8D4E8",
-    textDecoration: "none",
-    fontSize: 14,
-    fontWeight: 500,
-    letterSpacing: "0.3px",
-    cursor: "pointer",
-    transition: "color 0.2s",
-  },
-  navCta: {
-    background: "transparent",
-    border: "1px solid #00D4FF",
-    color: "#00D4FF",
-    padding: "8px 20px",
-    borderRadius: 6,
-    fontSize: 14,
-    fontWeight: 600,
-    cursor: "pointer",
-    transition: "background 0.2s, color 0.2s",
-    letterSpacing: "0.3px",
-  },
-  // HERO
-  hero: {
-    position: "relative",
-    minHeight: "100vh",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    textAlign: "center",
-    overflow: "hidden",
-  },
-  heroOverlay: {
-    position: "absolute",
-    inset: 0,
-    background:
-      "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(0,212,255,0.07) 0%, transparent 70%)",
-    pointerEvents: "none",
-  },
-  eyebrow: {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 8,
-    fontSize: 11,
-    fontWeight: 600,
-    letterSpacing: "2px",
-    textTransform: "uppercase",
-    color: "#00D4FF",
-    marginBottom: 24,
-    position: "relative",
-  },
-  eyebrowLine: {
-    width: 24,
-    height: 1,
-    background: "#00D4FF",
-  },
-  heroTitle: {
-    fontFamily: "'Space Grotesk', 'Inter', sans-serif",
-    fontSize: "clamp(32px, 7vw, 84px)",
-    fontWeight: 700,
-    lineHeight: 1.1,
-    letterSpacing: "-1.5px",
-    margin: "0 0 24px",
-    position: "relative",
-    maxWidth: 1000,
-    width: "100%",
-  },
-  heroAccent: {
-    background: "linear-gradient(135deg, #00D4FF 0%, #4DFFB4 100%)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-    backgroundClip: "text",
-  },
-  heroSub: {
-    fontSize: "clamp(15px, 1.8vw, 19px)",
-    color: "#B8D4E8",
-    maxWidth: 620,
-    lineHeight: 1.6,
-    margin: "0 0 40px",
-    position: "relative",
-    width: "100%",
-  },
-  heroBtns: {
-    display: "flex",
-    gap: 16,
-    flexWrap: "wrap",
-    justifyContent: "center",
-    position: "relative",
-    width: "100%",
-  },
-  btnPrimary: {
-    background: "linear-gradient(135deg, #00D4FF, #4DFFB4)",
-    color: "#0A0F1E",
-    border: "none",
-    padding: "14px 32px",
-    borderRadius: 8,
-    fontSize: 15,
-    fontWeight: 700,
-    cursor: "pointer",
-    letterSpacing: "0.3px",
-  },
-  btnSecondary: {
-    background: "transparent",
-    color: "#F0F8FF",
-    border: "1px solid rgba(240,248,255,0.25)",
-    padding: "14px 32px",
-    borderRadius: 8,
-    fontSize: 15,
-    fontWeight: 600,
-    cursor: "pointer",
-    letterSpacing: "0.3px",
-  },
-  // STATS BAR
-  statsBar: {
-    background: "#0E1628",
-    borderTop: "1px solid rgba(0,212,255,0.1)",
-    borderBottom: "1px solid rgba(0,212,255,0.1)",
-    display: "grid",
-    gap: 32,
-    textAlign: "center",
-    width: "100%",
-  },
-  statValue: {
-    fontFamily: "'Space Grotesk', 'Inter', sans-serif",
-    fontSize: "clamp(32px, 4vw, 44px)",
-    fontWeight: 700,
-    color: "#00D4FF",
-    lineHeight: 1,
-    marginBottom: 8,
-  },
-  statLabel: {
-    fontSize: 13,
-    color: "#B8D4E8",
-    letterSpacing: "0.5px",
-    fontWeight: 500,
-  },
-  // SECTIONS
-  section: {
-    width: "100%",
-    maxWidth: "100%",
-    margin: "0 auto",
-  },
-  sectionEyebrow: {
-    fontSize: 12,
-    fontWeight: 600,
-    letterSpacing: "2px",
-    textTransform: "uppercase",
-    color: "#00D4FF",
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontFamily: "'Space Grotesk', 'Inter', sans-serif",
-    fontSize: "clamp(26px, 4vw, 46px)",
-    fontWeight: 700,
-    letterSpacing: "-1px",
-    marginBottom: 16,
-    lineHeight: 1.15,
-  },
-  sectionSub: {
-    color: "#B8D4E8",
-    fontSize: 16,
-    maxWidth: 600,
-    lineHeight: 1.6,
-    marginBottom: 48,
-  },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-    gap: 24,
-    width: "100%",
-  },
-  card: {
-    background: "#0E1628",
-    border: "1px solid rgba(0,212,255,0.1)",
-    borderRadius: 12,
-    padding: "32px 28px",
-    transition: "border-color 0.25s, transform 0.2s",
-    cursor: "default",
-  },
-  cardIcon: {
-    fontSize: 28,
-    marginBottom: 20,
-    display: "block",
-  },
-  cardLabel: {
-    fontFamily: "'Space Grotesk', 'Inter', sans-serif",
-    fontSize: 18,
-    fontWeight: 700,
-    marginBottom: 12,
-    letterSpacing: "-0.3px",
-  },
-  cardDesc: {
-    fontSize: 14,
-    color: "#B8D4E8",
-    lineHeight: 1.65,
-  },
-  // CTA STRIP
-  ctaStrip: {
-    background: "linear-gradient(135deg, #0E1628 0%, #112040 100%)",
-    borderTop: "1px solid rgba(0,212,255,0.15)",
-    textAlign: "center",
-    width: "100%",
-  },
-  ctaTitle: {
-    fontFamily: "'Space Grotesk', 'Inter', sans-serif",
-    fontSize: "clamp(26px, 4vw, 48px)",
-    fontWeight: 700,
-    letterSpacing: "-1.5px",
-    marginBottom: 20,
-    lineHeight: 1.15,
-  },
-  ctaSub: {
-    color: "#B8D4E8",
-    fontSize: 17,
-    marginBottom: 40,
-    lineHeight: 1.6,
-  },
-  // FOOTER
-  footer: {
-    background: "#060A14",
-    borderTop: "1px solid rgba(255,255,255,0.06)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 24,
-    width: "100%",
-  },
-  footerNote: {
-    fontSize: 13,
-    color: "#4A6080",
-  },
-};
-
-// ── ServiceCard ────────────────────────────────────────────────────────────
 function ServiceCard({ service }) {
-  const [hovered, setHovered] = useState(false);
   return (
-    <div
-      style={{
-        ...styles.card,
-        borderColor: hovered
-          ? service.accent + "55"
-          : "rgba(0,212,255,0.1)",
-        transform: hovered ? "translateY(-4px)" : "none",
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      <span style={{ ...styles.cardIcon, color: service.accent }}>
-        {service.icon}
-      </span>
-      <div style={{ ...styles.cardLabel, color: hovered ? service.accent : "#F0F8FF" }}>
-        {service.label}
+    <div style={styles.card} className="service-card">
+      <div style={styles.cardHeader}>
+        <span style={styles.cardBadge}>{service.badge}</span>
       </div>
-      <div style={styles.cardDesc}>{service.desc}</div>
+      <h3 style={styles.cardLabel}>{service.label}</h3>
+      <p style={styles.cardText}>{service.desc}</p>
     </div>
   );
 }
 
-// ── App ────────────────────────────────────────────────────────────────────
-export default function NethroLabs() {
-  const [navHover, setNavHover] = useState(null);
-  // view state: 'home' or 'contact'
+export default function App() {
   const [view, setView] = useState("home");
+  const [currentUser, setCurrentUser] = useState(null);
+  const [authToken, setAuthToken] = useState("");
 
-  const navigateTo = (targetView, targetSection = null) => {
+  const navigateTo = (targetView) => {
     setView(targetView);
-    if (targetSection) {
-      setTimeout(() => {
-        document.getElementById(targetSection)?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleLoginSuccess = (user, token) => {
+    setCurrentUser(user);
+    setAuthToken(token);
+    
+    // Automatic role-based redirection evaluated from the API response record
+    if (user.role === "admin") {
+      navigateTo("admin-dashboard");
     } else {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      navigateTo("client-dashboard");
     }
   };
 
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setAuthToken("");
+    navigateTo("home");
+  };
+
+  const services = [
+    { label: "Predictive Analytics Systems", desc: "Build enterprise forecast kernels optimized for complex logistical modeling.", badge: "Deep Learning" },
+    { label: "Computer Vision Formations", desc: "Deploy classification frameworks built for consistent low-light imagery accuracy.", badge: "Vision" },
+    { label: "Custom Core AI Architecture", desc: "Construct fully walled, dedicated localized neural frameworks from raw foundational layers.", badge: "Infrastructure" }
+  ];
+
+  if (view === "login") {
+    return <LoginPage onLoginSuccess={handleLoginSuccess} navigateTo={navigateTo} />;
+  }
+
   if (view === "contact") {
-    return <ContactPage onNavigate={navigateTo} />;
+    return <ContactPage navigateTo={navigateTo} />;
+  }
+
+  // Dashboard layout screens
+  if (view === "admin-dashboard" || view === "client-dashboard") {
+    return (
+      <div style={{ ...styles.container, justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
+        <div style={{ color: "#FFF", textAlign: "center", padding: 40, background: "#111827", borderRadius: 12, border: "1px solid #1F2937", maxWidth: "500px", width: "90%" }}>
+          <h2 style={{ color: "#00D4FF", marginBottom: "16px" }}>
+            {currentUser?.role === "admin" ? "Administrative Central Terminal" : "Client Operations Workspace"}
+          </h2>
+          <p style={{ color: "#9CA3AF", marginBottom: "24px", fontSize: "15px" }}>
+            Authenticated session active for: <strong>{currentUser?.name}</strong> ({currentUser?.email})
+          </p>
+          <button style={styles.btnPrimary} onClick={handleLogout}>Terminate Session (Logout)</button>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div style={styles.root}>
-      {/* Global & Responsive Media Queries Overrides */}
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap');
-        
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; }
-        button:hover { opacity: 0.88; }
+    <div style={styles.container}>
+      <NeuralCanvas />
 
-        /* Universal Section Layouts (Full-Width & Edge-to-Edge Fluidity) */
-        nav { padding: 0 4%; height: 70px; }
-        .hero-section { padding: 140px 6% 80px; }
-        .stats-grid { padding: 40px 6%; grid-template-columns: repeat(4, 1fr); }
-        .content-section { padding: 100px 6%; }
-        .cta-section { padding: 90px 6%; }
-        .footer-section { padding: 40px 6%; flex-direction: row; }
-
-        /* Tablet Responsive Rules */
-        @media (max-width: 900px) {
-          .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
-        }
-
-        /* Mobile Responsive Rules */
-        @media (max-width: 680px) {
-          nav { height: auto; padding: 16px 4%; flex-direction: column; gap: 16px; align-items: center; text-align: center; }
-          .nav-links-container { gap: 18px; flex-wrap: wrap; justify-content: center; }
-          .hero-section { padding: 130px 4% 60px; }
-          .hero-buttons { flex-direction: column; width: 100%; max-width: 320px; }
-          .hero-buttons button { width: 100%; }
-          .stats-grid { grid-template-columns: 1fr; padding: 32px 4%; gap: 20px; }
-          .content-section { padding: 60px 4%; }
-          .cta-section { padding: 60px 4%; }
-          .footer-section { flex-direction: column; text-align: center; gap: 20px; padding: 40px 4%; }
-        }
-      `}</style>
-
-      {/* ── NAV ── */}
+      {/* ── NAVBAR ── */}
       <nav style={styles.nav}>
         <div style={styles.logo} onClick={() => navigateTo("home")}>
           Nethro<span style={styles.logoDot}>.</span>Labs
         </div>
-        <ul style={styles.navLinks} className="nav-links-container">
-          {["Services", "About", "Case Studies", "Contact"].map((link) => (
-            <li key={link}>
-              <a
-                style={{
-                  ...styles.navLink,
-                  color: navHover === link ? "#00D4FF" : "#B8D4E8",
-                }}
-                onMouseEnter={() => setNavHover(link)}
-                onMouseLeave={() => setNavHover(null)}
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (link === "Contact") {
-                    navigateTo("contact");
-                  } else if (link === "Services") {
-                    navigateTo("home", "services");
-                  } else {
-                    navigateTo("home");
-                  }
-                }}
-                href="#"
-              >
-                {link}
-              </a>
-            </li>
-          ))}
-        </ul>
-        <button style={styles.navCta} onClick={() => navigateTo("contact")}>
-          Get a Quote
-        </button>
+        <div style={{ display: "flex", gap: "28px", alignItems: "center" }}>
+          <span style={styles.navLink} onClick={() => navigateTo("home")}>Architecture</span>
+          <span style={styles.navLink} onClick={() => navigateTo("contact")}>Consultation</span>
+          <button style={styles.btnSecondary} onClick={() => navigateTo("login")}>
+            Portal Sign In
+          </button>
+        </div>
       </nav>
 
-      {/* ── HERO ── */}
-      <section style={styles.hero} className="hero-section">
-        <NeuralCanvas />
-        <div style={styles.heroOverlay} />
-        <div style={styles.eyebrow}>
-          <span style={styles.eyebrowLine} />
-          IT Solutions for the Modern Enterprise
-          <span style={styles.eyebrowLine} />
-        </div>
-        <h1 style={styles.heroTitle}>
-          Systems that{" "}
-          <span style={styles.heroAccent}>think ahead</span>
-          <br />so you don't have to.
-        </h1>
-        <p style={styles.heroSub}>
-          Nethro Labs delivers end-to-end IT solutions — cloud, security,
-          networking, and software — engineered to scale with your ambitions.
-        </p>
-        <div style={styles.heroBtns} className="hero-buttons">
-          <button style={styles.btnPrimary} onClick={() => navigateTo("contact")}>
-            Start a Project
-          </button>
-          <button style={styles.btnSecondary} onClick={() => navigateTo("home", "services")}>Explore Services →</button>
-        </div>
-      </section>
-
-      {/* ── STATS ── */}
-      <div style={styles.statsBar} className="stats-grid">
-        {stats.map((s) => (
-          <div key={s.label}>
-            <div style={styles.statValue}>{s.value}</div>
-            <div style={styles.statLabel}>{s.label}</div>
+      {/* ── HERO SECTION ── */}
+      <header style={styles.heroSection}>
+        <div style={styles.heroContent}>
+          <div style={styles.pill}>Next-Gen Enterprise Engine</div>
+          <h1 style={styles.heroTitle}>
+            Engineering Walled<br />
+            <span style={{ color: "#00D4FF" }}>Intelligence Frameworks</span>
+          </h1>
+          <p style={styles.heroSub}>
+            Nethro Labs architects domain-isolated deep learning architectures and high-throughput data backends for organizations requiring strict operational accuracy.
+          </p>
+          <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+            <button style={styles.btnPrimary} onClick={() => navigateTo("contact")}>
+              Initialize System Architecture
+            </button>
           </div>
-        ))}
-      </div>
+        </div>
+      </header>
 
-      {/* ── SERVICES ── */}
-      <div id="services" style={{ background: "#0A0F1E", width: "100%" }}>
-        <div style={styles.section} className="content-section">
-          <div style={styles.sectionEyebrow}>What We Do</div>
-          <h2 style={styles.sectionTitle}>
-            Full-spectrum IT,<br />
-            <span style={{ color: "#00D4FF" }}>zero compromises.</span>
-          </h2>
+      {/* ── SERVICES MATRIX ── */}
+      <div style={styles.matrixSection}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+          <h2 style={styles.sectionTitle}>Foundational Clusters</h2>
           <p style={styles.sectionSub}>
-            From the network layer to the application layer, Nethro Labs
-            covers every dimension of your technology stack.
+            We deploy strict hybrid models across core networks, engineering software that covers every dimension of your technology stack.
           </p>
           <div style={styles.grid}>
             {services.map((s) => (
@@ -615,11 +221,7 @@ export default function NethroLabs() {
         </div>
         <div style={{ display: "flex", gap: 24, justifyContent: "center" }}>
           {["Privacy", "Terms", "LinkedIn"].map((l) => (
-            <a
-              key={l}
-              href="#"
-              style={{ ...styles.footerNote, textDecoration: "none" }}
-            >
+            <a key={l} href="#" style={{ ...styles.footerNote, textDecoration: "none" }}>
               {l}
             </a>
           ))}
@@ -628,3 +230,201 @@ export default function NethroLabs() {
     </div>
   );
 }
+
+const styles = {
+  container: {
+    backgroundColor: "#070A13",
+    color: "#F3F4F6",
+    minHeight: "100vh",
+    position: "relative",
+    fontFamily: "system-ui, -apple-system, sans-serif",
+    overflowX: "hidden",
+  },
+  canvas: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "680px",
+    zIndex: 1,
+    pointerEvents: "none",
+  },
+  nav: {
+    position: "relative",
+    zIndex: 10,
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    maxWidth: "1200px",
+    margin: "0 auto",
+    padding: "32px 24px",
+  },
+  logo: {
+    fontSize: "20px",
+    fontWeight: "800",
+    color: "#FFF",
+    letterSpacing: "-0.5px",
+    cursor: "pointer",
+  },
+  logoDot: {
+    color: "#00D4FF",
+  },
+  navLink: {
+    fontSize: "14px",
+    color: "#9CA3AF",
+    cursor: "pointer",
+    fontWeight: "500",
+    transition: "color 0.2s",
+  },
+  heroSection: {
+    position: "relative",
+    zIndex: 5,
+    maxWidth: "1200px",
+    margin: "0 auto",
+    padding: "100px 24px 140px 24px",
+  },
+  heroContent: {
+    maxWidth: "680px",
+  },
+  pill: {
+    display: "inline-block",
+    backgroundColor: "rgba(0, 212, 255, 0.1)",
+    border: "1px solid rgba(0, 212, 255, 0.25)",
+    color: "#00D4FF",
+    padding: "6px 14px",
+    borderRadius: "100px",
+    fontSize: "12px",
+    fontWeight: "600",
+    marginBottom: "24px",
+    letterSpacing: "0.5px",
+  },
+  heroTitle: {
+    fontSize: "52px",
+    fontWeight: "800",
+    lineHeight: "1.15",
+    color: "#FFF",
+    margin: "0 0 24px 0",
+    letterSpacing: "-1px",
+  },
+  heroSub: {
+    fontSize: "18px",
+    lineHeight: "1.6",
+    color: "#9CA3AF",
+    margin: "0 0 40px 0",
+  },
+  matrixSection: {
+    backgroundColor: "#0B0F19",
+    borderTop: "1px solid #1F2937",
+    padding: "100px 24px",
+    position: "relative",
+    zIndex: 5,
+  },
+  sectionTitle: {
+    fontSize: "32px",
+    fontWeight: "800",
+    color: "#FFF",
+    textAlign: "center",
+    margin: "0 0 12px 0",
+    letterSpacing: "-0.5px",
+  },
+  sectionSub: {
+    fontSize: "16px",
+    color: "#9CA3AF",
+    textAlign: "center",
+    maxWidth: "600px",
+    margin: "0 auto 60px auto",
+    lineHeight: "1.5",
+  },
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+    gap: "32px",
+  },
+  card: {
+    backgroundColor: "#111827",
+    border: "1px solid #1F2937",
+    borderRadius: "12px",
+    padding: "32px",
+    transition: "all 0.3s ease",
+  },
+  cardHeader: {
+    marginBottom: "20px",
+  },
+  cardBadge: {
+    fontSize: "11px",
+    fontWeight: "700",
+    textTransform: "uppercase",
+    color: "#00D4FF",
+    backgroundColor: "rgba(0, 212, 255, 0.08)",
+    padding: "4px 10px",
+    borderRadius: "4px",
+    letterSpacing: "0.5px",
+  },
+  cardLabel: {
+    fontSize: "19px",
+    fontWeight: "700",
+    color: "#FFF",
+    margin: "0 0 12px 0",
+  },
+  cardText: {
+    fontSize: "14px",
+    lineHeight: "1.6",
+    color: "#9CA3AF",
+    margin: 0,
+  },
+  ctaStrip: {
+    borderTop: "1px solid #1F2937",
+    padding: "100px 24px",
+    textAlign: "center",
+    position: "relative",
+    zIndex: 5,
+  },
+  ctaTitle: {
+    fontSize: "36px",
+    fontWeight: "800",
+    lineHeight: "1.2",
+    color: "#FFF",
+    margin: "0 0 16px 0",
+  },
+  ctaSub: {
+    fontSize: "16px",
+    color: "#9CA3AF",
+    margin: "0 0 32px 0",
+  },
+  footer: {
+    borderTop: "1px solid #1F2937",
+    padding: "48px 24px",
+    textAlign: "center",
+    backgroundColor: "#05070D",
+    position: "relative",
+    zIndex: 5,
+  },
+  footerNote: {
+    fontSize: "13px",
+    color: "#4B5563",
+    marginTop: "16px",
+    marginBottom: "16px",
+  },
+  btnPrimary: {
+    backgroundColor: "#00D4FF",
+    color: "#070A13",
+    padding: "14px 28px",
+    borderRadius: "8px",
+    fontWeight: "700",
+    fontSize: "15px",
+    border: "none",
+    cursor: "pointer",
+    transition: "all 0.2s",
+  },
+  btnSecondary: {
+    backgroundColor: "transparent",
+    color: "#FFF",
+    padding: "10px 20px",
+    borderRadius: "8px",
+    fontWeight: "600",
+    fontSize: "14px",
+    border: "1px solid #374151",
+    cursor: "pointer",
+    transition: "all 0.2s",
+  },
+};
