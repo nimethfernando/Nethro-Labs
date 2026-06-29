@@ -2,6 +2,7 @@
     "conventionalCommits.scopes": [
         "Initial Commit",
         "Landing Page",
-        "backend startup"
+        "backend startup",
+        "First-TIme login"
     ]
 }
