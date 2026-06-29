@@ -148,6 +148,7 @@ const styles = {
     background: "#0A0F1E",
     color: "#F0F8FF",
     minHeight: "100vh",
+    width: "100%",
     overflowX: "hidden",
   },
   // NAV
@@ -160,8 +161,6 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: "0 48px",
-    height: 64,
     background: "rgba(10,15,30,0.85)",
     backdropFilter: "blur(12px)",
     borderBottom: "1px solid rgba(0,212,255,0.1)",
@@ -212,7 +211,6 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     textAlign: "center",
-    padding: "120px 24px 80px",
     overflow: "hidden",
   },
   heroOverlay: {
@@ -226,28 +224,29 @@ const styles = {
     display: "inline-flex",
     alignItems: "center",
     gap: 8,
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: 600,
     letterSpacing: "2px",
     textTransform: "uppercase",
     color: "#00D4FF",
-    marginBottom: 28,
+    marginBottom: 24,
     position: "relative",
   },
   eyebrowLine: {
-    width: 32,
+    width: 24,
     height: 1,
     background: "#00D4FF",
   },
   heroTitle: {
     fontFamily: "'Space Grotesk', 'Inter', sans-serif",
-    fontSize: "clamp(42px, 7vw, 92px)",
+    fontSize: "clamp(32px, 7vw, 84px)",
     fontWeight: 700,
-    lineHeight: 1.05,
-    letterSpacing: "-2px",
+    lineHeight: 1.1,
+    letterSpacing: "-1.5px",
     margin: "0 0 24px",
     position: "relative",
-    maxWidth: 900,
+    maxWidth: 1000,
+    width: "100%",
   },
   heroAccent: {
     background: "linear-gradient(135deg, #00D4FF 0%, #4DFFB4 100%)",
@@ -256,12 +255,13 @@ const styles = {
     backgroundClip: "text",
   },
   heroSub: {
-    fontSize: "clamp(16px, 2vw, 20px)",
+    fontSize: "clamp(15px, 1.8vw, 19px)",
     color: "#B8D4E8",
-    maxWidth: 560,
-    lineHeight: 1.65,
-    margin: "0 0 48px",
+    maxWidth: 620,
+    lineHeight: 1.6,
+    margin: "0 0 40px",
     position: "relative",
+    width: "100%",
   },
   heroBtns: {
     display: "flex",
@@ -269,6 +269,7 @@ const styles = {
     flexWrap: "wrap",
     justifyContent: "center",
     position: "relative",
+    width: "100%",
   },
   btnPrimary: {
     background: "linear-gradient(135deg, #00D4FF, #4DFFB4)",
@@ -297,15 +298,14 @@ const styles = {
     background: "#0E1628",
     borderTop: "1px solid rgba(0,212,255,0.1)",
     borderBottom: "1px solid rgba(0,212,255,0.1)",
-    padding: "40px 48px",
     display: "grid",
-    gridTemplateColumns: "repeat(4, 1fr)",
-    gap: 24,
+    gap: 32,
     textAlign: "center",
+    width: "100%",
   },
   statValue: {
     fontFamily: "'Space Grotesk', 'Inter', sans-serif",
-    fontSize: 40,
+    fontSize: "clamp(32px, 4vw, 44px)",
     fontWeight: 700,
     color: "#00D4FF",
     lineHeight: 1,
@@ -317,10 +317,10 @@ const styles = {
     letterSpacing: "0.5px",
     fontWeight: 500,
   },
-  // SERVICES
+  // SECTIONS
   section: {
-    padding: "100px 48px",
-    maxWidth: 1200,
+    width: "100%",
+    maxWidth: "100%",
     margin: "0 auto",
   },
   sectionEyebrow: {
@@ -333,29 +333,30 @@ const styles = {
   },
   sectionTitle: {
     fontFamily: "'Space Grotesk', 'Inter', sans-serif",
-    fontSize: "clamp(28px, 4vw, 48px)",
+    fontSize: "clamp(26px, 4vw, 46px)",
     fontWeight: 700,
     letterSpacing: "-1px",
     marginBottom: 16,
-    lineHeight: 1.1,
+    lineHeight: 1.15,
   },
   sectionSub: {
     color: "#B8D4E8",
     fontSize: 16,
-    maxWidth: 520,
+    maxWidth: 600,
     lineHeight: 1.6,
-    marginBottom: 64,
+    marginBottom: 48,
   },
   grid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
     gap: 24,
+    width: "100%",
   },
   card: {
     background: "#0E1628",
     border: "1px solid rgba(0,212,255,0.1)",
     borderRadius: 12,
-    padding: "36px 32px",
+    padding: "32px 28px",
     transition: "border-color 0.25s, transform 0.2s",
     cursor: "default",
   },
@@ -380,16 +381,16 @@ const styles = {
   ctaStrip: {
     background: "linear-gradient(135deg, #0E1628 0%, #112040 100%)",
     borderTop: "1px solid rgba(0,212,255,0.15)",
-    padding: "100px 48px",
     textAlign: "center",
+    width: "100%",
   },
   ctaTitle: {
     fontFamily: "'Space Grotesk', 'Inter', sans-serif",
-    fontSize: "clamp(28px, 4vw, 52px)",
+    fontSize: "clamp(26px, 4vw, 48px)",
     fontWeight: 700,
     letterSpacing: "-1.5px",
     marginBottom: 20,
-    lineHeight: 1.1,
+    lineHeight: 1.15,
   },
   ctaSub: {
     color: "#B8D4E8",
@@ -401,12 +402,11 @@ const styles = {
   footer: {
     background: "#060A14",
     borderTop: "1px solid rgba(255,255,255,0.06)",
-    padding: "40px 48px",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    flexWrap: "wrap",
-    gap: 16,
+    gap: 24,
+    width: "100%",
   },
   footerNote: {
     fontSize: 13,
@@ -446,25 +446,56 @@ export default function NethroLabs() {
   // view state: 'home' or 'contact'
   const [view, setView] = useState("home");
 
-  // Helper function to handle window view updates smoothly
-  const navigateTo = (targetView) => {
+  const navigateTo = (targetView, targetSection = null) => {
     setView(targetView);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (targetSection) {
+      setTimeout(() => {
+        document.getElementById(targetSection)?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
-  // Render ContactPage if the current view is set to 'contact'
   if (view === "contact") {
     return <ContactPage onNavigate={navigateTo} />;
   }
 
   return (
     <div style={styles.root}>
-      {/* Google Fonts */}
+      {/* Global & Responsive Media Queries Overrides */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap');
+        
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
         button:hover { opacity: 0.88; }
+
+        /* Universal Section Layouts (Full-Width & Edge-to-Edge Fluidity) */
+        nav { padding: 0 4%; height: 70px; }
+        .hero-section { padding: 140px 6% 80px; }
+        .stats-grid { padding: 40px 6%; grid-template-columns: repeat(4, 1fr); }
+        .content-section { padding: 100px 6%; }
+        .cta-section { padding: 90px 6%; }
+        .footer-section { padding: 40px 6%; flex-direction: row; }
+
+        /* Tablet Responsive Rules */
+        @media (max-width: 900px) {
+          .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+        }
+
+        /* Mobile Responsive Rules */
+        @media (max-width: 680px) {
+          nav { height: auto; padding: 16px 4%; flex-direction: column; gap: 16px; align-items: center; text-align: center; }
+          .nav-links-container { gap: 18px; flex-wrap: wrap; justify-content: center; }
+          .hero-section { padding: 130px 4% 60px; }
+          .hero-buttons { flex-direction: column; width: 100%; max-width: 320px; }
+          .hero-buttons button { width: 100%; }
+          .stats-grid { grid-template-columns: 1fr; padding: 32px 4%; gap: 20px; }
+          .content-section { padding: 60px 4%; }
+          .cta-section { padding: 60px 4%; }
+          .footer-section { flex-direction: column; text-align: center; gap: 20px; padding: 40px 4%; }
+        }
       `}</style>
 
       {/* ── NAV ── */}
@@ -472,7 +503,7 @@ export default function NethroLabs() {
         <div style={styles.logo} onClick={() => navigateTo("home")}>
           Nethro<span style={styles.logoDot}>.</span>Labs
         </div>
-        <ul style={styles.navLinks}>
+        <ul style={styles.navLinks} className="nav-links-container">
           {["Services", "About", "Case Studies", "Contact"].map((link) => (
             <li key={link}>
               <a
@@ -484,7 +515,13 @@ export default function NethroLabs() {
                 onMouseLeave={() => setNavHover(null)}
                 onClick={(e) => {
                   e.preventDefault();
-                  if (link === "Contact") navigateTo("contact");
+                  if (link === "Contact") {
+                    navigateTo("contact");
+                  } else if (link === "Services") {
+                    navigateTo("home", "services");
+                  } else {
+                    navigateTo("home");
+                  }
                 }}
                 href="#"
               >
@@ -499,7 +536,7 @@ export default function NethroLabs() {
       </nav>
 
       {/* ── HERO ── */}
-      <section style={styles.hero}>
+      <section style={styles.hero} className="hero-section">
         <NeuralCanvas />
         <div style={styles.heroOverlay} />
         <div style={styles.eyebrow}>
@@ -516,16 +553,16 @@ export default function NethroLabs() {
           Nethro Labs delivers end-to-end IT solutions — cloud, security,
           networking, and software — engineered to scale with your ambitions.
         </p>
-        <div style={styles.heroBtns}>
+        <div style={styles.heroBtns} className="hero-buttons">
           <button style={styles.btnPrimary} onClick={() => navigateTo("contact")}>
             Start a Project
           </button>
-          <button style={styles.btnSecondary}>Explore Services →</button>
+          <button style={styles.btnSecondary} onClick={() => navigateTo("home", "services")}>Explore Services →</button>
         </div>
       </section>
 
       {/* ── STATS ── */}
-      <div style={styles.statsBar}>
+      <div style={styles.statsBar} className="stats-grid">
         {stats.map((s) => (
           <div key={s.label}>
             <div style={styles.statValue}>{s.value}</div>
@@ -535,8 +572,8 @@ export default function NethroLabs() {
       </div>
 
       {/* ── SERVICES ── */}
-      <div style={{ background: "#0A0F1E" }}>
-        <div style={styles.section}>
+      <div id="services" style={{ background: "#0A0F1E", width: "100%" }}>
+        <div style={styles.section} className="content-section">
           <div style={styles.sectionEyebrow}>What We Do</div>
           <h2 style={styles.sectionTitle}>
             Full-spectrum IT,<br />
@@ -555,7 +592,7 @@ export default function NethroLabs() {
       </div>
 
       {/* ── CTA ── */}
-      <div style={styles.ctaStrip}>
+      <div style={styles.ctaStrip} className="cta-section">
         <h2 style={styles.ctaTitle}>
           Ready to build something<br />
           <span style={{ color: "#00D4FF" }}>resilient?</span>
@@ -569,14 +606,14 @@ export default function NethroLabs() {
       </div>
 
       {/* ── FOOTER ── */}
-      <footer style={styles.footer}>
+      <footer style={styles.footer} className="footer-section">
         <div style={styles.logo} onClick={() => navigateTo("home")}>
           Nethro<span style={styles.logoDot}>.</span>Labs
         </div>
         <div style={styles.footerNote}>
           © {new Date().getFullYear()} Nethro Labs. All rights reserved.
         </div>
-        <div style={{ display: "flex", gap: 24 }}>
+        <div style={{ display: "flex", gap: 24, justifyContent: "center" }}>
           {["Privacy", "Terms", "LinkedIn"].map((l) => (
             <a
               key={l}

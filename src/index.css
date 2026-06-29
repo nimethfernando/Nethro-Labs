@@ -109,3 +109,20 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+/* Find the #root selector in your index.css file and replace it with this: */
+#root {
+  width: 100%;
+  margin: 0;
+  text-align: center;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* Also ensure the body shares the same dark background color to prevent flashes */
+body {
+  margin: 0;
+  background-color: #0A0F1E;
+}

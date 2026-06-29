@@ -1,22 +1,19 @@
 import { useState, useEffect, useRef } from "react";
 
-// ── Neural Network Canvas (reused from main app) ───────────────────────────
+// ── Neural Network Canvas ──────────────────────────────────────────────────
 function NeuralCanvas() {
   const canvasRef = useRef(null);
-
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     let animId;
-
     const resize = () => {
       canvas.width = canvas.offsetWidth;
       canvas.height = canvas.offsetHeight;
     };
     resize();
     window.addEventListener("resize", resize);
-
-    const NODES = 28;
+    const NODES = 32;
     const nodes = Array.from({ length: NODES }, () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
@@ -25,17 +22,13 @@ function NeuralCanvas() {
       r: Math.random() * 2.5 + 1.2,
       pulse: Math.random() * Math.PI * 2,
     }));
-
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       nodes.forEach((n) => {
-        n.x += n.vx;
-        n.y += n.vy;
-        n.pulse += 0.025;
+        n.x += n.vx; n.y += n.vy; n.pulse += 0.025;
         if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
         if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
       });
-
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
           const dx = nodes[i].x - nodes[j].x;
@@ -51,7 +44,6 @@ function NeuralCanvas() {
           }
         }
       }
-
       nodes.forEach((n) => {
         const glow = Math.sin(n.pulse) * 0.4 + 0.6;
         ctx.beginPath();
@@ -63,441 +55,311 @@ function NeuralCanvas() {
         ctx.fillStyle = `rgba(180,230,255,0.9)`;
         ctx.fill();
       });
-
       animId = requestAnimationFrame(draw);
     };
     draw();
-
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("resize", resize);
-    };
+    return () => { cancelAnimationFrame(animId); window.removeEventListener("resize", resize); };
   }, []);
-
   return (
-    <canvas
-      ref={canvasRef}
-      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.4 }}
-    />
+    <canvas ref={canvasRef} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.4 }} />
   );
 }
 
-// ── Contact info items ─────────────────────────────────────────────────────
+// ── Data ───────────────────────────────────────────────────────────────────
 const contactInfo = [
-  {
-    icon: "✉",
-    label: "Email",
-    value: "hello@nethrolabs.io",
-    accent: "#00D4FF",
-  },
-  {
-    icon: "📞",
-    label: "Phone",
-    value: "+1 (888) 462-7600",
-    accent: "#4DFFB4",
-  },
-  {
-    icon: "📍",
-    label: "Headquarters",
-    value: "120 West 45th St, New York, NY 10036",
-    accent: "#A78BFA",
-  },
-  {
-    icon: "🕐",
-    label: "Support Hours",
-    value: "24 / 7 — 365 days a year",
-    accent: "#FFB347",
-  },
+  { icon: "✉", label: "Email",        value: "hello@nethrolabs.io",              accent: "#00D4FF" },
+  { icon: "📞", label: "Phone",        value: "+1 (888) 462-7600",               accent: "#4DFFB4" },
+  { icon: "📍", label: "Headquarters", value: "120 West 45th St, New York, NY",  accent: "#A78BFA" },
+  { icon: "🕐", label: "Support Hours",value: "24 / 7 — 365 days a year",        accent: "#FFB347" },
 ];
-
-// ── Styles ─────────────────────────────────────────────────────────────────
-const S = {
-  root: {
-    fontFamily: "'Inter', system-ui, sans-serif",
-    background: "#0A0F1E",
-    color: "#F0F8FF",
-    minHeight: "100vh",
-    overflowX: "hidden",
-  },
-  nav: {
-    position: "fixed",
-    top: 0, left: 0, right: 0,
-    zIndex: 100,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "0 48px",
-    height: 64,
-    background: "rgba(10,15,30,0.85)",
-    backdropFilter: "blur(12px)",
-    borderBottom: "1px solid rgba(0,212,255,0.1)",
-  },
-  logo: {
-    fontFamily: "'Space Grotesk', 'Inter', sans-serif",
-    fontSize: 22,
-    fontWeight: 700,
-    letterSpacing: "-0.5px",
-    color: "#F0F8FF",
-    textDecoration: "none",
-  },
-  logoDot: { color: "#00D4FF" },
-  navLinks: {
-    display: "flex", gap: 32, listStyle: "none", margin: 0, padding: 0,
-  },
-  navLink: {
-    color: "#B8D4E8", textDecoration: "none",
-    fontSize: 14, fontWeight: 500, letterSpacing: "0.3px", cursor: "pointer",
-  },
-  navCta: {
-    background: "transparent", border: "1px solid #00D4FF",
-    color: "#00D4FF", padding: "8px 20px", borderRadius: 6,
-    fontSize: 14, fontWeight: 600, cursor: "pointer", letterSpacing: "0.3px",
-  },
-  // PAGE HEADER
-  pageHeader: {
-    position: "relative",
-    paddingTop: 140,
-    paddingBottom: 80,
-    paddingInline: 48,
-    textAlign: "center",
-    overflow: "hidden",
-  },
-  overlay: {
-    position: "absolute", inset: 0,
-    background: "radial-gradient(ellipse 60% 55% at 50% 50%, rgba(0,212,255,0.07) 0%, transparent 70%)",
-    pointerEvents: "none",
-  },
-  eyebrow: {
-    display: "inline-flex", alignItems: "center", gap: 8,
-    fontSize: 12, fontWeight: 600, letterSpacing: "2px",
-    textTransform: "uppercase", color: "#00D4FF", marginBottom: 24,
-    position: "relative",
-  },
-  eyebrowLine: { width: 32, height: 1, background: "#00D4FF" },
-  pageTitle: {
-    fontFamily: "'Space Grotesk', 'Inter', sans-serif",
-    fontSize: "clamp(38px, 6vw, 72px)",
-    fontWeight: 700, lineHeight: 1.05,
-    letterSpacing: "-2px", margin: "0 0 20px",
-    position: "relative",
-  },
-  gradientText: {
-    background: "linear-gradient(135deg, #00D4FF 0%, #4DFFB4 100%)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-    backgroundClip: "text",
-  },
-  pageSub: {
-    fontSize: "clamp(15px, 2vw, 18px)",
-    color: "#B8D4E8", maxWidth: 500,
-    lineHeight: 1.65, margin: "0 auto",
-    position: "relative",
-  },
-  // BODY
-  body: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: 48,
-    maxWidth: 1100,
-    margin: "0 auto",
-    padding: "0 48px 100px",
-    alignItems: "start",
-  },
-  // FORM PANEL
-  formPanel: {
-    background: "#0E1628",
-    border: "1px solid rgba(0,212,255,0.12)",
-    borderRadius: 16,
-    padding: "48px 40px",
-  },
-  panelLabel: {
-    fontSize: 12, fontWeight: 600, letterSpacing: "2px",
-    textTransform: "uppercase", color: "#00D4FF", marginBottom: 8,
-  },
-  panelTitle: {
-    fontFamily: "'Space Grotesk', 'Inter', sans-serif",
-    fontSize: 26, fontWeight: 700, letterSpacing: "-0.5px",
-    marginBottom: 32, color: "#F0F8FF",
-  },
-  fieldGroup: { marginBottom: 20 },
-  label: {
-    display: "block", fontSize: 13, fontWeight: 500,
-    color: "#B8D4E8", marginBottom: 8, letterSpacing: "0.2px",
-  },
-  input: {
-    width: "100%", boxSizing: "border-box",
-    background: "#0A0F1E", border: "1px solid rgba(0,212,255,0.15)",
-    borderRadius: 8, padding: "12px 16px",
-    color: "#F0F8FF", fontSize: 15,
-    outline: "none", transition: "border-color 0.2s",
-    fontFamily: "'Inter', system-ui, sans-serif",
-  },
-  textarea: {
-    width: "100%", boxSizing: "border-box",
-    background: "#0A0F1E", border: "1px solid rgba(0,212,255,0.15)",
-    borderRadius: 8, padding: "12px 16px",
-    color: "#F0F8FF", fontSize: 15,
-    outline: "none", resize: "vertical",
-    minHeight: 130, transition: "border-color 0.2s",
-    fontFamily: "'Inter', system-ui, sans-serif",
-  },
-  selectWrapper: { position: "relative" },
-  select: {
-    width: "100%", boxSizing: "border-box",
-    background: "#0A0F1E", border: "1px solid rgba(0,212,255,0.15)",
-    borderRadius: 8, padding: "12px 16px",
-    color: "#F0F8FF", fontSize: 15,
-    outline: "none", appearance: "none",
-    cursor: "pointer", transition: "border-color 0.2s",
-    fontFamily: "'Inter', system-ui, sans-serif",
-  },
-  selectArrow: {
-    position: "absolute", right: 14, top: "50%",
-    transform: "translateY(-50%)",
-    color: "#B8D4E8", pointerEvents: "none", fontSize: 12,
-  },
-  row: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 },
-  submitBtn: {
-    width: "100%", marginTop: 8,
-    background: "linear-gradient(135deg, #00D4FF, #4DFFB4)",
-    color: "#0A0F1E", border: "none",
-    padding: "15px 32px", borderRadius: 8,
-    fontSize: 15, fontWeight: 700, cursor: "pointer",
-    letterSpacing: "0.3px", transition: "opacity 0.2s",
-  },
-  // INFO PANEL
-  infoPanel: { display: "flex", flexDirection: "column", gap: 16 },
-  infoCard: {
-    background: "#0E1628",
-    border: "1px solid rgba(0,212,255,0.1)",
-    borderRadius: 12, padding: "24px 28px",
-    display: "flex", alignItems: "flex-start", gap: 20,
-    transition: "border-color 0.25s, transform 0.2s",
-  },
-  infoIconWrap: {
-    width: 44, height: 44, borderRadius: 10,
-    display: "flex", alignItems: "center", justifyContent: "center",
-    fontSize: 20, flexShrink: 0,
-  },
-  infoLabel: {
-    fontSize: 12, fontWeight: 600, letterSpacing: "1.5px",
-    textTransform: "uppercase", color: "#B8D4E8", marginBottom: 6,
-  },
-  infoValue: {
-    fontSize: 15, color: "#F0F8FF", fontWeight: 500, lineHeight: 1.5,
-  },
-  // RESPONSE TIME BADGE
-  badge: {
-    background: "rgba(77,255,180,0.08)",
-    border: "1px solid rgba(77,255,180,0.2)",
-    borderRadius: 12, padding: "20px 24px",
-    display: "flex", alignItems: "center", gap: 16,
-  },
-  badgeDot: {
-    width: 10, height: 10, borderRadius: "50%",
-    background: "#4DFFB4", flexShrink: 0,
-    boxShadow: "0 0 8px #4DFFB4",
-  },
-  badgeText: { fontSize: 14, color: "#B8D4E8", lineHeight: 1.5 },
-  badgeTextStrong: { color: "#4DFFB4", fontWeight: 600 },
-  // FOOTER
-  footer: {
-    background: "#060A14",
-    borderTop: "1px solid rgba(255,255,255,0.06)",
-    padding: "40px 48px",
-    display: "flex", alignItems: "center",
-    justifyContent: "space-between", flexWrap: "wrap", gap: 16,
-  },
-  footerNote: { fontSize: 13, color: "#4A6080" },
-};
 
 // ── InfoCard ───────────────────────────────────────────────────────────────
 function InfoCard({ item }) {
   const [hovered, setHovered] = useState(false);
   return (
     <div
-      style={{
-        ...S.infoCard,
-        borderColor: hovered ? item.accent + "44" : "rgba(0,212,255,0.1)",
-        transform: hovered ? "translateY(-2px)" : "none",
-      }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      style={{
+        background: "#0E1628",
+        border: `1px solid ${hovered ? item.accent + "55" : "rgba(0,212,255,0.1)"}`,
+        borderRadius: 12,
+        padding: "22px 24px",
+        display: "flex",
+        alignItems: "center",
+        gap: 18,
+        transition: "border-color 0.25s, transform 0.2s",
+        transform: hovered ? "translateY(-2px)" : "none",
+      }}
     >
-      <div
-        style={{
-          ...S.infoIconWrap,
-          background: item.accent + "18",
-        }}
-      >
-        {item.icon}
-      </div>
+      <div style={{
+        width: 44, height: 44, borderRadius: 10, flexShrink: 0,
+        background: item.accent + "18",
+        display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20,
+      }}>{item.icon}</div>
       <div>
-        <div style={S.infoLabel}>{item.label}</div>
-        <div style={S.infoValue}>{item.value}</div>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "1.5px", textTransform: "uppercase", color: "#B8D4E8", marginBottom: 5 }}>
+          {item.label}
+        </div>
+        <div style={{ fontSize: 15, color: "#F0F8FF", fontWeight: 500 }}>{item.value}</div>
       </div>
     </div>
   );
 }
 
-// ── ContactField ───────────────────────────────────────────────────────────
-function Field({ label, children }) {
-  return (
-    <div style={S.fieldGroup}>
-      <label style={S.label}>{label}</label>
-      {children}
-    </div>
-  );
-}
-
-// ── Contact Page ───────────────────────────────────────────────────────────
+// ── App ────────────────────────────────────────────────────────────────────
 export default function ContactPage() {
   const [navHover, setNavHover] = useState(null);
-  const [focusedField, setFocusedField] = useState(null);
+  const [focused, setFocused] = useState(null);
   const [submitted, setSubmitted] = useState(false);
-  const [form, setForm] = useState({
-    firstName: "", lastName: "", email: "",
-    company: "", service: "", message: "",
+  const [form, setForm] = useState({ firstName:"", lastName:"", email:"", company:"", service:"", message:"" });
+
+  const set = (e) => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+  const inputStyle = (field) => ({
+    width: "100%", boxSizing: "border-box",
+    background: "#070C1A",
+    border: `1px solid ${focused === field ? "#00D4FF" : "rgba(0,212,255,0.15)"}`,
+    borderRadius: 8, padding: "12px 16px",
+    color: "#F0F8FF", fontSize: 15, outline: "none",
+    fontFamily: "inherit", transition: "border-color 0.2s",
+  });
+  const fProps = (name) => ({
+    name, value: form[name], onChange: set,
+    onFocus: () => setFocused(name), onBlur: () => setFocused(null),
   });
 
-  const handleChange = (e) =>
-    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
-
-  const handleSubmit = () => {
-    if (!form.email || !form.message) return;
-    setSubmitted(true);
-  };
-
-  const focusStyle = (field) =>
-    focusedField === field ? { borderColor: "#00D4FF" } : {};
-
   return (
-    <div style={S.root}>
+    <div style={{ fontFamily:"'Inter',system-ui,sans-serif", background:"#0A0F1E", color:"#F0F8FF", minHeight:"100vh", overflowX:"hidden" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
         ::placeholder { color: #3a4f6a; }
         option { background: #0A0F1E; color: #F0F8FF; }
-        @media (max-width: 768px) {
-          .contact-body { grid-template-columns: 1fr !important; padding: 0 24px 72px !important; }
-          .page-header { padding-inline: 24px !important; }
-          .nav-links { display: none !important; }
-          nav { padding: 0 24px !important; }
+        button:hover { opacity: 0.88; }
+
+        /* ── NAV ── */
+        .cn-nav {
+          position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 0 56px; height: 64px;
+          background: rgba(10,15,30,0.88); backdrop-filter: blur(14px);
+          border-bottom: 1px solid rgba(0,212,255,0.1);
+        }
+        .cn-nav-links { display:flex; gap:32px; list-style:none; }
+        .cn-nav-link {
+          font-size:14px; font-weight:500; letter-spacing:.3px;
+          text-decoration:none; cursor:pointer; transition:color .2s;
+        }
+        .cn-nav-cta {
+          background:transparent; border:1px solid #00D4FF; color:#00D4FF;
+          padding:8px 20px; border-radius:6px; font-size:14px;
+          font-weight:600; cursor:pointer; letter-spacing:.3px;
+          font-family:inherit;
+        }
+
+        /* ── HEADER ── */
+        .cn-header {
+          position: relative; overflow: hidden;
+          padding: 148px 56px 96px;
+          text-align: center;
+          background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(0,212,255,0.06) 0%, transparent 70%);
+        }
+        .cn-eyebrow {
+          display:inline-flex; align-items:center; gap:10px;
+          font-size:12px; font-weight:600; letter-spacing:2px;
+          text-transform:uppercase; color:#00D4FF; margin-bottom:24px; position:relative;
+        }
+        .cn-eyebrow-line { width:32px; height:1px; background:#00D4FF; }
+        .cn-h1 {
+          font-family:'Space Grotesk','Inter',sans-serif;
+          font-size:clamp(40px,6.5vw,80px); font-weight:700;
+          line-height:1.05; letter-spacing:-2px; margin-bottom:20px; position:relative;
+        }
+        .cn-gradient {
+          background:linear-gradient(135deg,#00D4FF 0%,#4DFFB4 100%);
+          -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+        }
+        .cn-sub {
+          font-size:clamp(15px,2vw,19px); color:#B8D4E8;
+          max-width:520px; line-height:1.65; margin:0 auto; position:relative;
+        }
+
+        /* ── BODY ── */
+        .cn-body {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 40px;
+          max-width: 1280px;
+          width: 100%;
+          margin: 0 auto;
+          padding: 0 56px 100px;
+          align-items: start;
+        }
+
+        /* ── FORM PANEL ── */
+        .cn-form-panel {
+          background:#0E1628; border:1px solid rgba(0,212,255,0.12);
+          border-radius:16px; padding:48px 40px;
+        }
+        .cn-panel-eyebrow {
+          font-size:12px; font-weight:600; letter-spacing:2px;
+          text-transform:uppercase; color:#00D4FF; margin-bottom:8px;
+        }
+        .cn-panel-title {
+          font-family:'Space Grotesk','Inter',sans-serif;
+          font-size:26px; font-weight:700; letter-spacing:-.5px;
+          margin-bottom:32px; color:#F0F8FF;
+        }
+        .cn-field { margin-bottom:20px; }
+        .cn-label {
+          display:block; font-size:13px; font-weight:500;
+          color:#B8D4E8; margin-bottom:8px; letter-spacing:.2px;
+        }
+        .cn-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+        .cn-submit {
+          width:100%; margin-top:8px;
+          background:linear-gradient(135deg,#00D4FF,#4DFFB4);
+          color:#0A0F1E; border:none; padding:15px 32px;
+          border-radius:8px; font-size:15px; font-weight:700;
+          cursor:pointer; letter-spacing:.3px; font-family:inherit;
+          transition:opacity .2s;
+        }
+        .cn-select-wrap { position:relative; }
+        .cn-select-arrow {
+          position:absolute; right:14px; top:50%; transform:translateY(-50%);
+          color:#B8D4E8; pointer-events:none; font-size:12px;
+        }
+
+        /* ── INFO PANEL ── */
+        .cn-info-panel { display:flex; flex-direction:column; gap:16px; }
+        .cn-badge {
+          background:rgba(77,255,180,0.07); border:1px solid rgba(77,255,180,0.2);
+          border-radius:12px; padding:20px 24px;
+          display:flex; align-items:flex-start; gap:14px;
+        }
+        .cn-badge-dot {
+          width:10px; height:10px; border-radius:50%; background:#4DFFB4;
+          flex-shrink:0; box-shadow:0 0 8px #4DFFB4; margin-top:4px;
+        }
+        .cn-badge-text { font-size:14px; color:#B8D4E8; line-height:1.6; }
+
+        /* ── FOOTER ── */
+        .cn-footer {
+          background:#060A14; border-top:1px solid rgba(255,255,255,0.06);
+          padding:40px 56px;
+          display:flex; align-items:center; justify-content:space-between;
+          flex-wrap:wrap; gap:16px;
+        }
+        .cn-logo {
+          font-family:'Space Grotesk','Inter',sans-serif;
+          font-size:22px; font-weight:700; letter-spacing:-.5px; color:#F0F8FF;
+        }
+        .cn-footer-note { font-size:13px; color:#4A6080; text-decoration:none; }
+
+        /* ── SUCCESS ── */
+        .cn-success { text-align:center; padding:48px 0; }
+        .cn-success-icon { font-size:52px; margin-bottom:24px; color:#4DFFB4; }
+        .cn-success-title {
+          font-family:'Space Grotesk','Inter',sans-serif;
+          font-size:26px; font-weight:700; margin-bottom:12px;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 900px) {
+          .cn-nav { padding: 0 24px; }
+          .cn-nav-links { display: none; }
+          .cn-header { padding: 120px 24px 72px; }
+          .cn-body { grid-template-columns: 1fr; padding: 0 24px 72px; gap: 28px; }
+          .cn-form-panel { padding: 32px 24px; }
+          .cn-footer { padding: 32px 24px; flex-direction: column; align-items: flex-start; gap: 12px; }
+          .cn-row { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 480px) {
+          .cn-h1 { letter-spacing: -1px; }
+          .cn-form-panel { padding: 28px 18px; }
         }
       `}</style>
 
       {/* NAV */}
-      <nav style={S.nav}>
-        <div style={S.logo}>
-          Nethro<span style={S.logoDot}>.</span>Labs
-        </div>
-        <ul style={S.navLinks} className="nav-links">
-          {["Services", "About", "Case Studies", "Contact"].map((link) => (
+      <nav className="cn-nav">
+        <div className="cn-logo">Nethro<span style={{ color:"#00D4FF" }}>.</span>Labs</div>
+        <ul className="cn-nav-links">
+          {["Services","About","Case Studies","Contact"].map(link => (
             <li key={link}>
               <a
-                style={{
-                  ...S.navLink,
-                  color: navHover === link || link === "Contact" ? "#00D4FF" : "#B8D4E8",
-                }}
+                className="cn-nav-link"
+                style={{ color: navHover === link || link === "Contact" ? "#00D4FF" : "#B8D4E8" }}
                 onMouseEnter={() => setNavHover(link)}
                 onMouseLeave={() => setNavHover(null)}
                 href="#"
-              >
-                {link}
-              </a>
+              >{link}</a>
             </li>
           ))}
         </ul>
-        <button style={S.navCta}>Get a Quote</button>
+        <button className="cn-nav-cta">Get a Quote</button>
       </nav>
 
-      {/* PAGE HEADER */}
-      <section style={S.pageHeader} className="page-header">
+      {/* HEADER */}
+      <header className="cn-header">
         <NeuralCanvas />
-        <div style={S.overlay} />
-        <div style={S.eyebrow}>
-          <span style={S.eyebrowLine} />
+        <div className="cn-eyebrow">
+          <span className="cn-eyebrow-line" />
           Let's Talk
-          <span style={S.eyebrowLine} />
+          <span className="cn-eyebrow-line" />
         </div>
-        <h1 style={S.pageTitle}>
+        <h1 className="cn-h1">
           Your next project<br />
-          <span style={S.gradientText}>starts here.</span>
+          <span className="cn-gradient">starts here.</span>
         </h1>
-        <p style={S.pageSub}>
+        <p className="cn-sub">
           Tell us what you're building. We'll come back with a tailored proposal within 48 hours — no pressure, no boilerplate.
         </p>
-      </section>
+      </header>
 
       {/* BODY */}
-      <div style={{ ...S.body, gridTemplateColumns: "1fr 1fr" }} className="contact-body">
+      <div className="cn-body">
 
-        {/* ── FORM PANEL ── */}
-        <div style={S.formPanel}>
+        {/* FORM */}
+        <div className="cn-form-panel">
           {submitted ? (
-            <div style={{ textAlign: "center", padding: "40px 0" }}>
-              <div style={{ fontSize: 48, marginBottom: 24 }}>✓</div>
-              <div style={{ ...S.panelTitle, marginBottom: 12 }}>Message received.</div>
-              <p style={{ color: "#B8D4E8", fontSize: 15, lineHeight: 1.65 }}>
+            <div className="cn-success">
+              <div className="cn-success-icon">✓</div>
+              <div className="cn-success-title">Message received.</div>
+              <p style={{ color:"#B8D4E8", fontSize:15, lineHeight:1.65 }}>
                 A member of the Nethro Labs team will be in touch within 48 hours.
               </p>
             </div>
           ) : (
             <>
-              <div style={S.panelLabel}>Send a Message</div>
-              <div style={S.panelTitle}>Tell us about your project</div>
+              <div className="cn-panel-eyebrow">Send a Message</div>
+              <div className="cn-panel-title">Tell us about your project</div>
 
-              <div style={S.row}>
-                <Field label="First name">
-                  <input
-                    style={{ ...S.input, ...focusStyle("firstName") }}
-                    name="firstName" value={form.firstName}
-                    onChange={handleChange} placeholder="Ada"
-                    onFocus={() => setFocusedField("firstName")}
-                    onBlur={() => setFocusedField(null)}
-                  />
-                </Field>
-                <Field label="Last name">
-                  <input
-                    style={{ ...S.input, ...focusStyle("lastName") }}
-                    name="lastName" value={form.lastName}
-                    onChange={handleChange} placeholder="Lovelace"
-                    onFocus={() => setFocusedField("lastName")}
-                    onBlur={() => setFocusedField(null)}
-                  />
-                </Field>
+              <div className="cn-row">
+                <div className="cn-field">
+                  <label className="cn-label">First name</label>
+                  <input style={inputStyle("firstName")} placeholder="Ada" {...fProps("firstName")} />
+                </div>
+                <div className="cn-field">
+                  <label className="cn-label">Last name</label>
+                  <input style={inputStyle("lastName")} placeholder="Lovelace" {...fProps("lastName")} />
+                </div>
               </div>
 
-              <Field label="Work email *">
-                <input
-                  style={{ ...S.input, ...focusStyle("email") }}
-                  type="email" name="email" value={form.email}
-                  onChange={handleChange} placeholder="ada@company.com"
-                  onFocus={() => setFocusedField("email")}
-                  onBlur={() => setFocusedField(null)}
-                />
-              </Field>
+              <div className="cn-field">
+                <label className="cn-label">Work email *</label>
+                <input style={inputStyle("email")} type="email" placeholder="ada@company.com" {...fProps("email")} />
+              </div>
 
-              <Field label="Company">
-                <input
-                  style={{ ...S.input, ...focusStyle("company") }}
-                  name="company" value={form.company}
-                  onChange={handleChange} placeholder="Acme Corp"
-                  onFocus={() => setFocusedField("company")}
-                  onBlur={() => setFocusedField(null)}
-                />
-              </Field>
+              <div className="cn-field">
+                <label className="cn-label">Company</label>
+                <input style={inputStyle("company")} placeholder="Acme Corp" {...fProps("company")} />
+              </div>
 
-              <Field label="Service area">
-                <div style={S.selectWrapper}>
-                  <select
-                    style={{ ...S.select, ...focusStyle("service") }}
-                    name="service" value={form.service}
-                    onChange={handleChange}
-                    onFocus={() => setFocusedField("service")}
-                    onBlur={() => setFocusedField(null)}
-                  >
+              <div className="cn-field">
+                <label className="cn-label">Service area</label>
+                <div className="cn-select-wrap">
+                  <select style={{ ...inputStyle("service"), appearance:"none", cursor:"pointer" }} {...fProps("service")}>
                     <option value="">Select a service…</option>
                     <option>Cloud Infrastructure</option>
                     <option>Cybersecurity</option>
@@ -507,43 +369,39 @@ export default function ContactPage() {
                     <option>Data & Analytics</option>
                     <option>Other / Not sure yet</option>
                   </select>
-                  <span style={S.selectArrow}>▾</span>
+                  <span className="cn-select-arrow">▾</span>
                 </div>
-              </Field>
+              </div>
 
-              <Field label="Tell us about your project *">
+              <div className="cn-field">
+                <label className="cn-label">Tell us about your project *</label>
                 <textarea
-                  style={{ ...S.textarea, ...focusStyle("message") }}
-                  name="message" value={form.message}
-                  onChange={handleChange}
+                  style={{ ...inputStyle("message"), resize:"vertical", minHeight:130 }}
                   placeholder="What are you trying to build or fix? The more detail, the better."
-                  onFocus={() => setFocusedField("message")}
-                  onBlur={() => setFocusedField(null)}
+                  {...fProps("message")}
                 />
-              </Field>
+              </div>
 
-              <button style={S.submitBtn} onClick={handleSubmit}>
+              <button className="cn-submit" onClick={() => { if (form.email && form.message) setSubmitted(true); }}>
                 Send message →
               </button>
             </>
           )}
         </div>
 
-        {/* ── INFO PANEL ── */}
-        <div style={S.infoPanel}>
+        {/* INFO */}
+        <div className="cn-info-panel">
           <div>
-            <div style={{ ...S.panelLabel, marginBottom: 8 }}>Reach us directly</div>
-            <div style={{ ...S.panelTitle, marginBottom: 24 }}>We're here when you need us.</div>
+            <div className="cn-panel-eyebrow">Reach us directly</div>
+            <div className="cn-panel-title" style={{ marginBottom:24 }}>We're here when you need us.</div>
           </div>
 
-          {contactInfo.map((item) => (
-            <InfoCard key={item.label} item={item} />
-          ))}
+          {contactInfo.map(item => <InfoCard key={item.label} item={item} />)}
 
-          <div style={S.badge}>
-            <div style={S.badgeDot} />
-            <p style={S.badgeText}>
-              <span style={S.badgeTextStrong}>48-hour response guarantee.</span>{" "}
+          <div className="cn-badge">
+            <div className="cn-badge-dot" />
+            <p className="cn-badge-text">
+              <span style={{ color:"#4DFFB4", fontWeight:600 }}>48-hour response guarantee.</span>{" "}
               Every inquiry gets a real reply from a senior engineer — no auto-responders, no sales scripts.
             </p>
           </div>
@@ -551,16 +409,12 @@ export default function ContactPage() {
       </div>
 
       {/* FOOTER */}
-      <footer style={S.footer}>
-        <div style={{ ...S.logo, textDecoration: "none" }}>
-          Nethro<span style={S.logoDot}>.</span>Labs
-        </div>
-        <div style={S.footerNote}>
-          © {new Date().getFullYear()} Nethro Labs. All rights reserved.
-        </div>
-        <div style={{ display: "flex", gap: 24 }}>
-          {["Privacy", "Terms", "LinkedIn"].map((l) => (
-            <a key={l} href="#" style={{ ...S.footerNote, textDecoration: "none" }}>{l}</a>
+      <footer className="cn-footer">
+        <div className="cn-logo">Nethro<span style={{ color:"#00D4FF" }}>.</span>Labs</div>
+        <div className="cn-footer-note">© {new Date().getFullYear()} Nethro Labs. All rights reserved.</div>
+        <div style={{ display:"flex", gap:24 }}>
+          {["Privacy","Terms","LinkedIn"].map(l => (
+            <a key={l} href="#" className="cn-footer-note">{l}</a>
           ))}
         </div>
       </footer>
