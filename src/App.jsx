@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+// Import the ContactPage component
+import ContactPage from "./ContactPage";
 
 // ── Neural Network Canvas ──────────────────────────────────────────────────
 function NeuralCanvas() {
@@ -170,6 +172,7 @@ const styles = {
     fontWeight: 700,
     letterSpacing: "-0.5px",
     color: "#F0F8FF",
+    cursor: "pointer",
   },
   logoDot: { color: "#00D4FF" },
   navLinks: {
@@ -440,6 +443,19 @@ function ServiceCard({ service }) {
 // ── App ────────────────────────────────────────────────────────────────────
 export default function NethroLabs() {
   const [navHover, setNavHover] = useState(null);
+  // view state: 'home' or 'contact'
+  const [view, setView] = useState("home");
+
+  // Helper function to handle window view updates smoothly
+  const navigateTo = (targetView) => {
+    setView(targetView);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Render ContactPage if the current view is set to 'contact'
+  if (view === "contact") {
+    return <ContactPage onNavigate={navigateTo} />;
+  }
 
   return (
     <div style={styles.root}>
@@ -453,7 +469,7 @@ export default function NethroLabs() {
 
       {/* ── NAV ── */}
       <nav style={styles.nav}>
-        <div style={styles.logo}>
+        <div style={styles.logo} onClick={() => navigateTo("home")}>
           Nethro<span style={styles.logoDot}>.</span>Labs
         </div>
         <ul style={styles.navLinks}>
@@ -466,6 +482,10 @@ export default function NethroLabs() {
                 }}
                 onMouseEnter={() => setNavHover(link)}
                 onMouseLeave={() => setNavHover(null)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (link === "Contact") navigateTo("contact");
+                }}
                 href="#"
               >
                 {link}
@@ -473,7 +493,9 @@ export default function NethroLabs() {
             </li>
           ))}
         </ul>
-        <button style={styles.navCta}>Get a Quote</button>
+        <button style={styles.navCta} onClick={() => navigateTo("contact")}>
+          Get a Quote
+        </button>
       </nav>
 
       {/* ── HERO ── */}
@@ -495,7 +517,9 @@ export default function NethroLabs() {
           networking, and software — engineered to scale with your ambitions.
         </p>
         <div style={styles.heroBtns}>
-          <button style={styles.btnPrimary}>Start a Project</button>
+          <button style={styles.btnPrimary} onClick={() => navigateTo("contact")}>
+            Start a Project
+          </button>
           <button style={styles.btnSecondary}>Explore Services →</button>
         </div>
       </section>
@@ -539,12 +563,14 @@ export default function NethroLabs() {
         <p style={styles.ctaSub}>
           Talk to our team and get a tailored proposal within 48 hours.
         </p>
-        <button style={styles.btnPrimary}>Schedule a Call</button>
+        <button style={styles.btnPrimary} onClick={() => navigateTo("contact")}>
+          Schedule a Call
+        </button>
       </div>
 
       {/* ── FOOTER ── */}
       <footer style={styles.footer}>
-        <div style={styles.logo}>
+        <div style={styles.logo} onClick={() => navigateTo("home")}>
           Nethro<span style={styles.logoDot}>.</span>Labs
         </div>
         <div style={styles.footerNote}>
