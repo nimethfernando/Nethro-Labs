@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import ContactPage from "./ContactPage";
 import LoginPage from "./components/LoginPage";
 import AdminDashboard from "./components/AdminDashboard";
+import ClientDashboard from "./components/ClientDashboard"; // Imported client workspace
 import "./App.css";
 
 function NeuralCanvas() {
@@ -237,17 +238,14 @@ export default function App() {
     );
   }
 
+  // 🔥 UPDATED: Dynamic component presentation instead of static fallback card
   if (view === "client-dashboard") {
     return (
-      <div className="center-dashboard-container">
-        <div className="dashboard-card-fallback">
-          <h2 className="dashboard-fallback-title">Client Operations Workspace</h2>
-          <p className="dashboard-fallback-text">
-            Authenticated session active for: <strong>{currentUser?.name}</strong> ({currentUser?.email})
-          </p>
-          <button className="btn-primary" onClick={handleLogout}>Terminate Session (Logout)</button>
-        </div>
-      </div>
+      <ClientDashboard 
+        token={authToken} 
+        currentUser={currentUser} 
+        onLogout={handleLogout} 
+      />
     );
   }
 
