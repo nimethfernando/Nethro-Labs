@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-// 🔥 FIX: Clean async pre-save hook without using 'next'
+// 1. Clean async pre-save hook for password hashing
 userSchema.pre('save', async function () {
   if (!this.isModified('password')) return;
 
@@ -37,6 +37,10 @@ userSchema.pre('save', async function () {
     throw new Error(error);
   }
 });
+
+userSchema.methods.matchPasswords = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
 
 const User = mongoose.model('User', userSchema);
 export default User;
