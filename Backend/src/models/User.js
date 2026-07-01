@@ -1,49 +1,42 @@
 import mongoose from 'mongoose';
-import bcryptjs from 'bcryptjs';
+import bcrypt from 'bcryptjs';
 
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Please provide a name'],
-    trim: true,
+    required: true,
   },
   email: {
     type: String,
-    required: [true, 'Please provide an email address'],
+    required: true,
     unique: true,
-    lowercase: true,
-    trim: true,
   },
   password: {
     type: String,
-    required: [true, 'Please provide a password'],
-    minlength: 6,
-    select: false,
+    required: true,
   },
   role: {
     type: String,
-    enum: ['client', 'admin'],
-    default: 'client',
+    enum: ['user', 'admin'],
+    default: 'user',
   },
-  // Tracks if the client must reset their temporary admin-assigned password
-  isFirstLogin: {
+  isVerified: {
     type: Boolean,
-    default: true, 
+    default: false,
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
+}, { timestamps: true });
+
+// 🔥 FIX: Clean async pre-save hook without using 'next'
+userSchema.pre('save', async function () {
+  if (!this.isModified('password')) return;
+
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+  } catch (error) {
+    throw new Error(error);
+  }
 });
 
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
-  this.password = await bcryptjs.hash(this.password, 12);
-  next();
-});
-
-userSchema.methods.matchPasswords = async function (enteredPassword) {
-  return await bcryptjs.compare(enteredPassword, this.password);
-};
-
-export default mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
+export default User;
