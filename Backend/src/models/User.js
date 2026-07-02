@@ -17,8 +17,12 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['user', 'admin'],
-    default: 'user',
+    enum: ['user', 'admin', 'client'], // 🔥 Added 'client' to fix the validation crash
+    default: 'client',
+  },
+  requiresPasswordReset: {
+    type: Boolean,
+    default: true, // 🔥 Automatically flags new accounts for a mandatory first-login password change
   },
   isVerified: {
     type: Boolean,
@@ -26,7 +30,7 @@ const userSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-// 1. Clean async pre-save hook for password hashing
+// Async pre-save hook for password hashing
 userSchema.pre('save', async function () {
   if (!this.isModified('password')) return;
 
@@ -38,6 +42,7 @@ userSchema.pre('save', async function () {
   }
 });
 
+// Password comparison method
 userSchema.methods.matchPasswords = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
