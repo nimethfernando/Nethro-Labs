@@ -19,46 +19,28 @@ export default function AdminDashboard({ token, onLogout }) {
     setMessage({ type: "", text: "" });
 
     try {
-      // Step 1: Create Client Account with forced password update flag
-      const clientResponse = await fetch("http://localhost:5000/api/admin/create-client", {
+      // Unified database pipeline request to your backend orchestration endpoint
+      const response = await fetch("http://localhost:5000/api/projects", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({
+          // Mapped directly to what your User schema and Mongoose model validation requires
           name: clientName,
           email: clientEmail,
           password: tempPassword,
-          role: "client",
-        }),
-      });
-
-      const clientData = await clientResponse.json();
-
-      if (!clientResponse.ok) {
-        throw new Error(clientData.message || "Failed to establish client account infrastructure.");
-      }
-
-      // Step 2: Associate and provision Project Matrix linked to the created client ID
-      const projectResponse = await fetch("http://localhost:5000/api/projects", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          name: projectName,
+          clusterName: projectName,
           description: projectDesc,
           budget: projectBudget,
-          clientId: clientData.user.id, // Links directly to new MongoDB account reference
         }),
       });
 
-      const projectData = await projectResponse.json();
+      const data = await response.json();
 
-      if (!projectResponse.ok) {
-        throw new Error(projectData.message || "Client profile created, but project assignment failed.");
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to provision workspace ecosystem.");
       }
 
       setMessage({
