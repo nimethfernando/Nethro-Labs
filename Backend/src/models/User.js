@@ -30,15 +30,19 @@ const userSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-// Async pre-save hook for password hashing
+// Async pre-save hook for password hashing (Modern Promise Style)
 userSchema.pre('save', async function () {
+  // If the password hasn't been updated, exit early by simply returning.
   if (!this.isModified('password')) return;
 
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
+    // 💡 CRITICAL FIX: In async hooks, do not accept or call next(). 
+    // Simply letting the function complete successfully resolves the internal Mongoose promise.
   } catch (error) {
-    throw new Error(error);
+    // Throwing an error safely rejects the internal promise and halts the save lifecycle.
+    throw new Error(error.message || error);
   }
 });
 
