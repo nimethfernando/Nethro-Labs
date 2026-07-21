@@ -1,81 +1,75 @@
 import express from 'express';
 import User from '../models/User.js';
 import Project from '../models/Project.js'; 
+import { verifyToken, isAdmin } from '../middleware/authMiddleware.js'; // Adjust based on your auth middleware setup
 
 const router = express.Router();
 
-// POST /api/projects - Form Handler
-router.post('/', async (req, res) => {
+// ... [YOUR EXISTING POST / ROUTE] ...
+
+// PUT /api/projects/:id - Update Project Details
+router.put('/:id', verifyToken, isAdmin, async (req, res) => {
   try {
-    // Extracted and normalized to handle variations in frontend payload naming conventions
-    const { 
-      name, 
-      clientName, 
-      organizationName, 
-      email, 
-      corporateEmail,
-      password, 
-      sharedPassword,
-      clusterName, 
+    const { id } = req.params;
+
+    const {
+      clusterName,
       projectCluster,
-      description, 
+      description,
       operationalSpecifications,
       budget,
-      allocatedBudget 
+      allocatedBudget,
+      status, // Optional: if you track project status (e.g., Pending, In Progress, Completed)
+      clientName,
+      corporateEmail
     } = req.body;
 
-    // Fallbacks to guarantee fields match your exact UI form labels
-    const finalName = name || clientName || organizationName;
-    const finalEmail = email || corporateEmail;
-    const finalPassword = password || sharedPassword;
+    // Normalization fallbacks matching your POST handler logic
     const finalClusterName = clusterName || projectCluster;
     const finalDescription = description || operationalSpecifications;
-    const finalBudget = budget || allocatedBudget;
+    const finalBudget = budget !== undefined ? budget : allocatedBudget;
 
-    // Validate essential profile specifications
-    if (!finalName || !finalEmail || !finalPassword) {
-      return res.status(400).json({ 
-        message: 'Missing core profile specifications (Name, Email gateway, or Temporary password).' 
-      });
+    // 1. Build project update object dynamically
+    const projectUpdates = {};
+    if (finalClusterName !== undefined) projectUpdates.clusterName = finalClusterName;
+    if (finalDescription !== undefined) projectUpdates.description = finalDescription;
+    if (finalBudget !== undefined) projectUpdates.budget = Number(finalBudget) || 0;
+    if (status !== undefined) projectUpdates.status = status;
+
+    // 2. Find and update project document
+    const updatedProject = await Project.findByIdAndUpdate(
+      id,
+      { $set: projectUpdates },
+      { new: true, runValidators: true }
+    ).populate('client', 'name email role'); // Populate client info for response
+
+    if (!updatedProject) {
+      return res.status(404).json({ message: 'Project infrastructure not found.' });
     }
 
-    // 1. Check if the client profile already exists
-    const clientExists = await User.findOne({ email: finalEmail });
-    if (clientExists) {
-      return res.status(400).json({ 
-        message: 'A client profile with this corporate email gateway already exists.' 
-      });
+    // 3. Optional: Update client user profile if client details (Name/Email) were provided in the edit form
+    if (updatedProject.client && (clientName || corporateEmail)) {
+      const clientUpdates = {};
+      if (clientName) clientUpdates.name = clientName;
+      if (corporateEmail) clientUpdates.email = corporateEmail;
+
+      await User.findByIdAndUpdate(
+        updatedProject.client._id,
+        { $set: clientUpdates },
+        { runValidators: true }
+      );
     }
 
-    // 2. Provision the client user document
-    const newClient = new User({
-      name: finalName,
-      email: finalEmail,
-      password: finalPassword, // Model pre-save hook automatically hashes this securely
-      role: 'client',
-      requiresPasswordReset: true,
-      isVerified: true
-    });
-    const savedClient = await newClient.save();
-
-    // 3. Create the architectural project mapping
-    const newProject = new Project({
-      client: savedClient._id,
-      clusterName: finalClusterName || 'Default Cluster',
-      description: finalDescription || 'No description provided.',
-      budget: Number(finalBudget) || 0
-    });
-    await newProject.save();
-
-    return res.status(201).json({
+    return res.status(200).json({
       success: true,
-      message: 'Client environment and project infrastructure provisioned successfully.'
+      message: 'Project details updated successfully.',
+      project: updatedProject
     });
 
   } catch (error) {
-    console.error('❌ Provisioning Error:', error);
-    return res.status(500).json({ 
-      message: `Server error during provisioning: ${error.message}` 
+    console.error('❌ Project Update Error:', error);
+    return res.status(500).json({
+      message: `Server error while updating project: ${error.message}`
     });
   }
 });
