@@ -37,7 +37,11 @@ router.post('/', protect, restrictTo('admin'), async (req, res) => {
       description, 
       operationalSpecifications,
       budget,
-      allocatedBudget 
+      allocatedBudget,
+      stagingUrl,
+      liveUrl,
+      status,
+      progress
     } = req.body;
 
     const finalName = name || clientName || organizationName;
@@ -74,7 +78,11 @@ router.post('/', protect, restrictTo('admin'), async (req, res) => {
       client: savedClient._id,
       clusterName: finalClusterName || 'Default Cluster',
       description: finalDescription || 'No description provided.',
-      budget: Number(finalBudget) || 0
+      budget: Number(finalBudget) || 0,
+      stagingUrl: stagingUrl || '',
+      liveUrl: liveUrl || '',
+      status: status || 'Requirement Analysis',
+      progress: Number(progress) || 0
     });
     await newProject.save();
 
@@ -91,7 +99,7 @@ router.post('/', protect, restrictTo('admin'), async (req, res) => {
   }
 });
 
-// PUT /api/projects/:id - Update Project Details
+// PUT /api/projects/:id - Update Project Details (Website Links, Status, & Progress)
 router.put('/:id', protect, restrictTo('admin'), async (req, res) => {
   try {
     const { id } = req.params;
@@ -103,7 +111,10 @@ router.put('/:id', protect, restrictTo('admin'), async (req, res) => {
       operationalSpecifications,
       budget,
       allocatedBudget,
+      stagingUrl,
+      liveUrl,
       status,
+      progress,
       clientName,
       corporateEmail
     } = req.body;
@@ -112,12 +123,15 @@ router.put('/:id', protect, restrictTo('admin'), async (req, res) => {
     const finalDescription = description || operationalSpecifications;
     const finalBudget = budget !== undefined ? budget : allocatedBudget;
 
-    // 1. Dynamic update object
+    // 1. Dynamic update object for web development metrics
     const projectUpdates = {};
     if (finalClusterName !== undefined) projectUpdates.clusterName = finalClusterName;
     if (finalDescription !== undefined) projectUpdates.description = finalDescription;
     if (finalBudget !== undefined) projectUpdates.budget = Number(finalBudget) || 0;
+    if (stagingUrl !== undefined) projectUpdates.stagingUrl = stagingUrl;
+    if (liveUrl !== undefined) projectUpdates.liveUrl = liveUrl;
     if (status !== undefined) projectUpdates.status = status;
+    if (progress !== undefined) projectUpdates.progress = Number(progress) || 0;
 
     // 2. Find and update project document
     const updatedProject = await Project.findByIdAndUpdate(
@@ -145,7 +159,7 @@ router.put('/:id', protect, restrictTo('admin'), async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Project details updated successfully.',
+      message: 'Website deployment details and status updated successfully.',
       project: updatedProject
     });
 
