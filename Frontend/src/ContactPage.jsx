@@ -67,10 +67,10 @@ function NeuralCanvas() {
 
 // ── Data ───────────────────────────────────────────────────────────────────
 const contactInfo = [
-  { icon: "✉", label: "Email",        value: "hello@nethrolabs.io",              accent: "#00D4FF" },
-  { icon: "📞", label: "Phone",        value: "+1 (888) 462-7600",               accent: "#4DFFB4" },
-  { icon: "📍", label: "Headquarters", value: "120 West 45th St, New York, NY",  accent: "#A78BFA" },
-  { icon: "🕐", label: "Support Hours",value: "24 / 7 — 365 days a year",        accent: "#FFB347" },
+  { icon: "✉", label: "Email",        value: "nimeth42@gmail.com",                                                 accent: "#00D4FF" },
+  { icon: "📞", label: "Phone",        value: "+94 72 545 2820",                                                     accent: "#4DFFB4" },
+  { icon: "📍", label: "Headquarters", value: "71A, Mayfair Gardens Road, Koralwella, Moratuwa",                    accent: "#A78BFA" },
+  { icon: "🕐", label: "Support Hours",value: "24 / 7 — 365 days a year",                                           accent: "#FFB347" },
 ];
 
 // ── InfoCard ───────────────────────────────────────────────────────────────
@@ -351,6 +351,7 @@ export default function ContactPage({ onNavigate }) {
                 <div className="cn-select-wrap">
                   <select style={{ ...inputStyle("service"), appearance:"none", cursor:"pointer" }} {...fProps("service")}>
                     <option value="">Select a service…</option>
+                    <option>Web Platform Development</option>
                     <option>Cloud Infrastructure</option>
                     <option>Cybersecurity</option>
                     <option>Network Solutions</option>
@@ -404,7 +405,7 @@ export default function ContactPage({ onNavigate }) {
         <div className="cn-footer-note">© {new Date().getFullYear()} Nethro Labs. All rights reserved.</div>
         <div style={{ display:"flex", gap:24 }}>
           {["Privacy","Terms","LinkedIn"].map(l => (
-            <a key={l} href="#" className="cn-footer-note" style={{ textDecoration: "none" }}>{l}</a>
+            <a key={l} href="#" className="cn-footer-note" style={{ textDecoration: "none", color: "#B8D4E8" }}>{l}</a>
           ))}
         </div>
       </footer>
