@@ -175,8 +175,25 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [authToken, setAuthToken] = useState("");
 
+  // Handle browser Back / Forward buttons
+  useEffect(() => {
+    const handlePopState = (e) => {
+      if (e.state && e.state.view) {
+        setView(e.state.view);
+      } else {
+        setView("home");
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
   const navigateTo = (targetView) => {
-    setView(targetView);
+    if (view !== targetView) {
+      window.history.pushState({ view: targetView }, "", `#${targetView}`);
+      setView(targetView);
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
