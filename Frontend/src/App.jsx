@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import ContactPage from "./ContactPage";
 import LoginPage from "./components/LoginPage";
 import AdminDashboard from "./components/AdminDashboard";
-import ClientDashboard from "./components/ClientDashboard"; // Imported client workspace
+import ClientDashboard from "./components/ClientDashboard";
 import "./App.css";
 
 function NeuralCanvas() {
@@ -109,7 +109,7 @@ function InitialPasswordSetup({ token, onSetupSuccess }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ newPassword }),
       });
@@ -183,7 +183,7 @@ export default function App() {
   const handleLoginSuccess = (user, token) => {
     setCurrentUser(user);
     setAuthToken(token);
-    
+
     if (user.requiresPasswordReset) {
       navigateTo("setup-password");
     } else if (user.role === "admin") {
@@ -200,23 +200,23 @@ export default function App() {
   };
 
   const services = [
+    { label: "Enterprise Web Applications", desc: "Engineering modern, scalable web ecosystems built for heavy operational demand.", badge: "Web Systems" },
     { label: "Predictive Analytics Systems", desc: "Build enterprise forecast kernels optimized for complex logistical modeling.", badge: "Deep Learning" },
-    { label: "Computer Vision Formations", desc: "Deploy classification frameworks built for consistent low-light imagery accuracy.", badge: "Vision" },
-    { label: "Custom Core AI Architecture", desc: "Construct fully walled, dedicated localized neural frameworks from raw foundational layers.", badge: "Infrastructure" }
+    { label: "Custom Core Software Architecture", desc: "Construct fully walled, dedicated localized neural and database frameworks.", badge: "Infrastructure" }
   ];
 
   if (view === "login") {
     return (
-      <LoginPage 
+      <LoginPage
         onLoginSuccess={(user, token) => {
-          const checkResponse = arguments[0]; 
+          const checkResponse = arguments[0];
           if (checkResponse && checkResponse.requiresPasswordReset) {
             handleLoginSuccess({ ...checkResponse.user, requiresPasswordReset: true }, arguments[1]);
           } else {
             handleLoginSuccess(user, token);
           }
-        }} 
-        navigateTo={navigateTo} 
+        }}
+        navigateTo={navigateTo}
       />
     );
   }
@@ -231,20 +231,19 @@ export default function App() {
 
   if (view === "setup-password") {
     return (
-      <InitialPasswordSetup 
-        token={authToken} 
-        onSetupSuccess={() => navigateTo("client-dashboard")} 
+      <InitialPasswordSetup
+        token={authToken}
+        onSetupSuccess={() => navigateTo("client-dashboard")}
       />
     );
   }
 
-  // 🔥 UPDATED: Dynamic component presentation instead of static fallback card
   if (view === "client-dashboard") {
     return (
-      <ClientDashboard 
-        token={authToken} 
-        currentUser={currentUser} 
-        onLogout={handleLogout} 
+      <ClientDashboard
+        token={authToken}
+        currentUser={currentUser}
+        onLogout={handleLogout}
       />
     );
   }
@@ -270,28 +269,85 @@ export default function App() {
       {/* ── HERO SECTION ── */}
       <header className="hero-section">
         <div className="hero-content">
-          <div className="pill-badge">Next-Gen Enterprise Engine</div>
+          <div className="pill-badge">Next-Gen Software Solutions</div>
           <h1 className="hero-title">
-            Engineering Walled<br />
-            <span className="hero-title-highlight">Intelligence Frameworks</span>
+            Architecting Resilient<br />
+            <span className="hero-title-highlight">Digital Platforms</span>
           </h1>
           <p className="hero-subtext">
-            Nethro Labs architects domain-isolated deep learning architectures and high-throughput data backends for organizations requiring strict operational accuracy.
+            Nethro Labs engineers bespoke Web Platforms, Intelligent Analytics Backends, and High-Throughput Software Architecture for enterprise operations.
           </p>
           <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
             <button className="btn-primary" onClick={() => navigateTo("contact")}>
-              Initialize System Architecture
+              Initialize Project Proposal
             </button>
           </div>
         </div>
       </header>
 
+      {/* ── FLAGSHIP PROJECT SHOWCASE ── */}
+      <div className="matrix-section" style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.08)" }}>
+        <div className="matrix-wrapper">
+          <div className="pill-badge" style={{ marginBottom: "12px" }}>Flagship Deployment</div>
+          <h2 className="section-main-title">Project Petra Constructions</h2>
+          <p className="section-sub-title">
+            Nethro Labs' debut production deployment—an enterprise web solution developed for Petra Constructions, empowering their digital presence and civil engineering project showcases.
+          </p>
+
+          <div style={{
+            background: "rgba(10, 15, 25, 0.7)",
+            border: "1px solid rgba(0, 212, 255, 0.2)",
+            borderRadius: "12px",
+            padding: "32px",
+            marginTop: "24px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "20px"
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
+              <div>
+                <span className="card-pill-tag">Production Live</span>
+                <h3 style={{ fontSize: "1.5rem", marginTop: "8px", color: "#fff" }}>Petra Constructions Web Portal</h3>
+              </div>
+              <a 
+                href="https://www.petraconstructions.lk/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="btn-primary"
+                style={{ textDecoration: "none" }}
+              >
+                Launch Platform ↗
+              </a>
+            </div>
+            
+            <p className="card-body-description" style={{ fontSize: "1rem" }}>
+              Designed and built from the ground up to support modern civil engineering visual presentation, structured client inquiries, and high performance content delivery.
+            </p>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "16px", marginTop: "12px" }}>
+              <div style={{ padding: "12px", background: "rgba(255, 255, 255, 0.03)", borderRadius: "8px" }}>
+                <strong style={{ color: "#00d4ff", display: "block" }}>Domain</strong>
+                <span style={{ fontSize: "0.9rem", color: "#a0aec0" }}>Civil & Infrastructure</span>
+              </div>
+              <div style={{ padding: "12px", background: "rgba(255, 255, 255, 0.03)", borderRadius: "8px" }}>
+                <strong style={{ color: "#00d4ff", display: "block" }}>Stack</strong>
+                <span style={{ fontSize: "0.9rem", color: "#a0aec0" }}>Modern Web & Cloud Integration</span>
+              </div>
+              <div style={{ padding: "12px", background: "rgba(255, 255, 255, 0.03)", borderRadius: "8px" }}>
+                <strong style={{ color: "#00d4ff", display: "block" }}>Status</strong>
+                <span style={{ fontSize: "0.9rem", color: "#a0aec0" }}>Active & Managed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* ── SERVICES MATRIX ── */}
       <div className="matrix-section">
         <div className="matrix-wrapper">
-          <h2 className="section-main-title">Foundational Clusters</h2>
+          <h2 className="section-main-title">Foundational Capabilities</h2>
           <p className="section-sub-title">
-            We deploy strict hybrid models across core networks, engineering software that covers every dimension of your technology stack.
+            We build robust, tailored software solutions across diverse industries, bringing precision and scale to every enterprise architecture.
           </p>
           <div className="services-grid-layout">
             {services.map((s) => (
@@ -308,7 +364,7 @@ export default function App() {
           <span className="cta-title-accent">resilient?</span>
         </h2>
         <p className="cta-supporting-text">
-          Talk to our team and get a tailored proposal within 48 hours.
+          Talk to our engineering team and get a tailored proposal for your platform.
         </p>
         <button className="btn-primary" onClick={() => navigateTo("contact")}>
           Schedule a Call
