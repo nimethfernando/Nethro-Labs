@@ -26,12 +26,13 @@ const sendTokenResponse = (user, statusCode, res, extraFields = {}) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      isFirstLogin: user.isFirstLogin,
     },
     ...extraFields,
   });
 };
 
-// Admin uses this endpoint to register new clients with a temporary common password
+// Admin endpoint to register new users/clients
 export const register = async (req, res, next) => {
   try {
     const { name, email, password, role } = req.body;
@@ -41,21 +42,22 @@ export const register = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Email already registered' });
     }
 
-    // Admins creating users will default 'isFirstLogin' to true
-    const user = await User.create({ 
-      name, 
-      email, 
-      password, 
+    // New users default to isFirstLogin: true
+    const user = await User.create({
+      name,
+      email,
+      password,
       role: role || 'client',
-      isFirstLogin: true 
+      isFirstLogin: true,
     });
-    
-    sendTokenResponse(user, 211, res);
+
+    sendTokenResponse(user, 201, res);
   } catch (error) {
     next(error);
   }
 };
 
+// Login endpoint
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -69,19 +71,20 @@ export const login = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
-    // Intercept login if it's the client's first time using the temporary password
-    if (user.role === 'client' && user.isFirstLogin) {
+    // Intercept login if first-time user needs a password reset
+    if (user.isFirstLogin) {
       return res.status(200).json({
         success: true,
         requiresPasswordReset: true,
         message: 'First time login detected. Password modification required.',
-        token: signToken(user._id, user.role), // Temporary token to access setup route
+        token: signToken(user._id, user.role), // Token supplied to authorize setup-password route
         user: {
           id: user._id,
           name: user.name,
           email: user.email,
-          role: user.role
-        }
+          role: user.role,
+          isFirstLogin: user.isFirstLogin,
+        },
       });
     }
 
@@ -91,7 +94,7 @@ export const login = async (req, res, next) => {
   }
 };
 
-// Client uses this endpoint to finalize account initialization
+// Endpoint for setting initial new password
 export const setupInitialPassword = async (req, res, next) => {
   try {
     const { newPassword } = req.body;
@@ -105,12 +108,12 @@ export const setupInitialPassword = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    // Update password and drop the first time login flag
+    // Update password and clear first login flag
     user.password = newPassword;
     user.isFirstLogin = false;
     await user.save();
 
-    sendTokenResponse(user, 200, res, { message: 'Password initialized successfully.' });
+    sendTokenResponse(user, 200, res, { message: 'Password updated successfully.' });
   } catch (error) {
     next(error);
   }
