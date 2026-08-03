@@ -1,0 +1,76 @@
+.client-dashboard-view {
+  isolation: isolate;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* Positioned inside the dashboard container, not against the viewport. */
+.client-dashboard-animation {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(0, 212, 255, .035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, .035) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: linear-gradient(to bottom, black, transparent 88%);
+}
+
+.client-orbit {
+  position: absolute;
+  border: 1px solid rgba(0, 212, 255, .16);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: client-pulse 7s ease-in-out infinite;
+}
+.client-orbit-one { width: 680px; height: 680px; top: 34%; left: 74%; }
+.client-orbit-two { width: 420px; height: 420px; top: 34%; left: 74%; animation-delay: -3.5s; }
+.client-scan-line {
+  position: absolute; top: 0; left: 0; width: 100%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(77, 255, 180, .55), transparent);
+  animation: client-scan 8s linear infinite;
+}
+
+.navbar-hub, .dashboard-main { position: relative; z-index: 1; }
+.navbar-hub {
+  max-width: 1280px; margin: 0 auto; padding: 22px 40px; display: flex;
+  align-items: center; justify-content: space-between;
+  border-bottom: 1px solid rgba(148, 163, 184, .14);
+}
+.nav-links-cluster { display: flex; gap: 16px; align-items: center; }
+.user-session-badge { display: inline-flex; gap: 9px; align-items: center; color: #cbd5e1; font-size: 14px; }
+.status-indicator-dot { width: 8px; height: 8px; border-radius: 50%; background: #4dffb4; box-shadow: 0 0 12px rgba(77, 255, 180, .9); }
+.logout-btn { padding: 10px 16px; }
+
+.dashboard-main { max-width: 1280px; margin: 0 auto; padding: 72px 40px 96px; }
+.matrix-wrapper { max-width: 1100px; margin: 0 auto; }
+.dashboard-header-block { max-width: 720px; margin-bottom: 44px; }
+.dashboard-title { margin: 0 0 18px; font-size: clamp(38px, 5vw, 60px); }
+.dashboard-header-block .hero-subtext { margin: 0; }
+.metrics-summary-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-bottom: 42px; }
+.metric-card, .workspace-data-table-section { background: rgba(14, 22, 40, .78); border: 1px solid rgba(0, 212, 255, .16); border-radius: 14px; box-shadow: 0 18px 40px rgba(0, 0, 0, .2); }
+.metric-card { padding: 24px; }
+.card-pill-tag { color: #00d4ff; font-size: 11px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
+.card-heading-label { margin: 18px 0 8px; color: #94a3b8; font-size: 14px; font-weight: 600; }
+.metric-value-text { margin: 0; color: #f8fafc; font-size: 21px; font-weight: 700; }
+.text-green { color: #4dffb4; } .text-blue { color: #38bdf8; }
+.workspace-data-table-section { padding: 30px; }
+.section-main-title { margin: 0 0 24px; font-size: 24px; }
+.custom-terminal-table-wrapper { overflow-x: auto; }
+.terminal-data-table { width: 100%; border-collapse: collapse; min-width: 620px; }
+.terminal-data-table th { padding: 0 14px 14px; color: #94a3b8; font-size: 11px; text-align: left; letter-spacing: .08em; text-transform: uppercase; }
+.terminal-data-table td { padding: 17px 14px; border-top: 1px solid rgba(148, 163, 184, .12); color: #e2e8f0; }
+.mono-text { color: #00d4ff !important; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.priority-tag, .status-tag { display: inline-block; padding: 4px 9px; border-radius: 999px; background: rgba(0, 212, 255, .1); color: #7dd3fc; font-size: 12px; text-transform: capitalize; }
+.loading-spinner-box, .empty-state-box { max-width: none; width: 100%; }
+
+@keyframes client-pulse { 50% { opacity: .28; transform: translate(-50%, -50%) scale(1.12); } }
+@keyframes client-scan { from { transform: translateY(0); } to { transform: translateY(900px); } }
+@media (max-width: 720px) {
+  .navbar-hub { padding: 18px 20px; } .user-session-badge { display: none; }
+  .dashboard-main { padding: 48px 20px 70px; } .metrics-summary-grid { grid-template-columns: 1fr; }
+  .workspace-data-table-section { padding: 22px 14px; } .client-orbit-one { left: 90%; }
+}
+@media (prefers-reduced-motion: reduce) { .client-orbit, .client-scan-line { animation: none; } }

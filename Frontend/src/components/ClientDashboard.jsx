@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import "./ClientDashboard.css";
 
 export default function ClientDashboard({ token, onLogout, currentUser }) {
   const [tickets, setTickets] = useState([]);
@@ -37,6 +38,11 @@ export default function ClientDashboard({ token, onLogout, currentUser }) {
 
   return (
     <div className="app-container client-dashboard-view">
+      <div className="client-dashboard-animation" aria-hidden="true">
+        <span className="client-orbit client-orbit-one" />
+        <span className="client-orbit client-orbit-two" />
+        <span className="client-scan-line" />
+      </div>
       {/* ── INTERNAL APEX NAVIGATION ── */}
       <nav className="navbar-hub">
         <div className="brand-logo">

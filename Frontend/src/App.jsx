@@ -221,7 +221,7 @@ export default function App() {
         </div>
       );
     }
-    return <ClientDashboard user={user} token={token} onLogout={handleLogout} />;
+    return <ClientDashboard currentUser={user} token={token} onLogout={handleLogout} />;
   }
 
   const services = [
