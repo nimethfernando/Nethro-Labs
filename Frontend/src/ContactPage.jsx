@@ -235,6 +235,15 @@ export default function ContactPage({ navigateTo, onNavigate }) {
           text-align: center;
           background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(0,212,255,0.08) 0%, transparent 70%);
         }
+        .cn-header .neural-canvas {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          opacity: 0.7;
+        }
+        .cn-header > :not(.neural-canvas) { position: relative; z-index: 1; }
         .cn-eyebrow {
           display:inline-flex; align-items:center; gap:12px;
           font-size:12px; font-weight:700; letter-spacing:2px;
