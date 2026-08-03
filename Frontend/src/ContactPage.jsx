@@ -6,6 +6,7 @@ function NeuralCanvas() {
   const canvasRef = useRef(null);
   useEffect(() => {
     const canvas = canvasRef.current;
+    if (!canvas) return;
     const ctx = canvas.getContext("2d");
     let animId;
 
@@ -93,24 +94,26 @@ function InfoCard({ item }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        background: "#0E1628",
-        border: `1px solid ${hovered ? item.accent + "55" : "rgba(0,212,255,0.1)"}`,
-        borderRadius: 12,
+        background: hovered ? "#111C33" : "#0E1628",
+        border: `1px solid ${hovered ? item.accent + "66" : "rgba(0,212,255,0.12)"}`,
+        borderRadius: 14,
         padding: "22px 24px",
         display: "flex",
         alignItems: "center",
         gap: 18,
-        transition: "border-color 0.25s, transform 0.2s",
-        transform: hovered ? "translateY(-2px)" : "none",
+        transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+        transform: hovered ? "translateY(-3px)" : "none",
+        boxShadow: hovered ? `0 8px 24px -6px ${item.accent}22` : "none",
       }}
     >
       <div
         style={{
-          width: 44,
-          height: 44,
-          borderRadius: 10,
+          width: 48,
+          height: 48,
+          borderRadius: 12,
           flexShrink: 0,
-          background: item.accent + "18",
+          background: item.accent + "1A",
+          border: `1px solid ${item.accent}33`,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -123,16 +126,16 @@ function InfoCard({ item }) {
         <div
           style={{
             fontSize: 11,
-            fontWeight: 600,
+            fontWeight: 700,
             letterSpacing: "1.5px",
             textTransform: "uppercase",
-            color: "#B8D4E8",
-            marginBottom: 5,
+            color: "#94A3B8",
+            marginBottom: 4,
           }}
         >
           {item.label}
         </div>
-        <div style={{ fontSize: 15, color: "#F0F8FF", fontWeight: 500 }}>{item.value}</div>
+        <div style={{ fontSize: 15, color: "#F0F8FF", fontWeight: 500, lineHeight: 1.4 }}>{item.value}</div>
       </div>
     </div>
   );
@@ -140,7 +143,11 @@ function InfoCard({ item }) {
 
 // ── Main Contact Page ──────────────────────────────────────────────────────
 export default function ContactPage({ navigateTo, onNavigate }) {
-  const handleNavigate = navigateTo || onNavigate;
+  const handleNavigate = (page) => {
+    const nav = navigateTo || onNavigate;
+    if (typeof nav === "function") nav(page);
+  };
+
   const [focused, setFocused] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -159,15 +166,16 @@ export default function ContactPage({ navigateTo, onNavigate }) {
   const inputStyle = (field) => ({
     width: "100%",
     boxSizing: "border-box",
-    background: "#070C1A",
-    border: `1px solid ${focused === field ? "#00D4FF" : "rgba(0,212,255,0.15)"}`,
-    borderRadius: 8,
-    padding: "12px 16px",
+    background: focused === field ? "#0B132B" : "#070C1A",
+    border: `1px solid ${focused === field ? "#00D4FF" : "rgba(0,212,255,0.18)"}`,
+    boxShadow: focused === field ? "0 0 0 3px rgba(0, 212, 255, 0.15)" : "none",
+    borderRadius: 10,
+    padding: "13px 16px",
     color: "#F0F8FF",
     fontSize: 15,
     outline: "none",
     fontFamily: "inherit",
-    transition: "border-color 0.2s",
+    transition: "all 0.2s ease-in-out",
   });
 
   const fProps = (name) => ({
@@ -218,21 +226,22 @@ export default function ContactPage({ navigateTo, onNavigate }) {
     <div className="app-container" style={{ background: "#0A0F1E", color: "#F0F8FF", minHeight: "100vh" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap');
-        ::placeholder { color: #3a4f6a; }
+        ::placeholder { color: #475569; }
         option { background: #0A0F1E; color: #F0F8FF; }
 
         .cn-header {
           position: relative; overflow: hidden;
           padding: 148px 56px 72px;
           text-align: center;
-          background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(0,212,255,0.06) 0%, transparent 70%);
+          background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(0,212,255,0.08) 0%, transparent 70%);
         }
         .cn-eyebrow {
-          display:inline-flex; align-items:center; gap:10px;
-          font-size:12px; font-weight:600; letter-spacing:2px;
+          display:inline-flex; align-items:center; gap:12px;
+          font-size:12px; font-weight:700; letter-spacing:2px;
           text-transform:uppercase; color:#00D4FF; margin-bottom:24px; position:relative;
         }
-        .cn-eyebrow-line { width:32px; height:1px; background:#00D4FF; }
+        .cn-eyebrow-line { width:32px; height:1px; background:linear-gradient(90deg, transparent, #00D4FF); }
+        .cn-eyebrow-line.right { background:linear-gradient(90deg, #00D4FF, transparent); }
         .cn-h1 {
           font-family:'Space Grotesk','Inter',sans-serif;
           font-size:clamp(40px,6.5vw,80px); font-weight:700;
@@ -244,7 +253,7 @@ export default function ContactPage({ navigateTo, onNavigate }) {
         }
         .cn-sub {
           font-size:clamp(15px,2vw,19px); color:#B8D4E8;
-          max-width:520px; line-height:1.65; margin:0 auto; position:relative;
+          max-width:540px; line-height:1.65; margin:0 auto; position:relative;
         }
 
         .cn-body {
@@ -259,11 +268,12 @@ export default function ContactPage({ navigateTo, onNavigate }) {
         }
 
         .cn-form-panel {
-          background:#0E1628; border:1px solid rgba(0,212,255,0.12);
-          border-radius:16px; padding:48px 40px;
+          background:#0E1628; border:1px solid rgba(0,212,255,0.15);
+          border-radius:20px; padding:48px 40px;
+          box-shadow: 0 20px 40px -15px rgba(0,0,0,0.5);
         }
         .cn-panel-eyebrow {
-          font-size:12px; font-weight:600; letter-spacing:2px;
+          font-size:12px; font-weight:700; letter-spacing:2px;
           text-transform:uppercase; color:#00D4FF; margin-bottom:8px;
         }
         .cn-panel-title {
@@ -271,51 +281,56 @@ export default function ContactPage({ navigateTo, onNavigate }) {
           font-size:26px; font-weight:700; letter-spacing:-.5px;
           margin-bottom:32px; color:#F0F8FF;
         }
-        .cn-field { margin-bottom:20px; }
+        .cn-field { margin-bottom:22px; }
         .cn-label {
-          display:block; font-size:13px; font-weight:500;
+          display:block; font-size:13px; font-weight:600;
           color:#B8D4E8; margin-bottom:8px; letter-spacing:.2px;
         }
         .cn-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
         .cn-submit {
-          width:100%; margin-top:8px;
+          width:100%; margin-top:10px;
           background:linear-gradient(135deg,#00D4FF,#4DFFB4);
-          color:#0A0F1E; border:none; padding:15px 32px;
-          border-radius:8px; font-size:15px; font-weight:700;
+          color:#0A0F1E; border:none; padding:16px 32px;
+          border-radius:10px; font-size:15px; font-weight:700;
           cursor:pointer; letter-spacing:.3px; font-family:inherit;
-          transition:opacity .2s;
+          transition:all .25s ease;
+          box-shadow: 0 4px 20px rgba(0,212,255,0.25);
+        }
+        .cn-submit:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 28px rgba(0,212,255,0.4);
         }
         .cn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
         .cn-select-wrap { position:relative; }
         .cn-select-arrow {
-          position:absolute; right:14px; top:50%; transform:translateY(-50%);
-          color:#B8D4E8; pointer-events:none; font-size:12px;
+          position:absolute; right:16px; top:50%; transform:translateY(-50%);
+          color:#00D4FF; pointer-events:none; font-size:12px;
         }
         .cn-error-banner {
           background: rgba(255, 77, 77, 0.1);
           border: 1px solid rgba(255, 77, 77, 0.3);
           color: #ff6b6b;
           padding: 12px 16px;
-          border-radius: 8px;
+          border-radius: 10px;
           font-size: 14px;
           margin-bottom: 20px;
         }
 
-        .cn-info-panel { display:flex; flex-direction:column; gap:16px; }
+        .cn-info-panel { display:flex; flex-direction:column; gap:18px; }
         .cn-badge {
-          background:rgba(77,255,180,0.07); border:1px solid rgba(77,255,180,0.2);
-          border-radius:12px; padding:20px 24px;
+          background:rgba(77,255,180,0.05); border:1px solid rgba(77,255,180,0.25);
+          border-radius:14px; padding:20px 24px;
           display:flex; align-items:flex-start; gap:14px;
         }
         .cn-badge-dot {
           width:10px; height:10px; border-radius:50%; background:#4DFFB4;
-          flex-shrink:0; box-shadow:0 0 8px #4DFFB4; margin-top:4px;
+          flex-shrink:0; box-shadow:0 0 10px #4DFFB4; margin-top:5px;
         }
         .cn-badge-text { font-size:14px; color:#B8D4E8; line-height:1.6; }
 
         @media (max-width: 900px) {
           .cn-header { padding: 120px 24px 72px; }
-          .cn-body { grid-template-columns: 1fr; padding: 0 24px 72px; gap: 28px; }
+          .cn-body { grid-template-columns: 1fr; padding: 0 24px 72px; gap: 32px; }
           .cn-form-panel { padding: 32px 24px; }
           .cn-row { grid-template-columns: 1fr; }
         }
@@ -325,20 +340,21 @@ export default function ContactPage({ navigateTo, onNavigate }) {
         }
       `}</style>
 
-      {/* ── NAVBAR (Identical to Homepage) ── */}
-      <nav className="navbar-hub">
+      {/* ── NAVIGATION HEADER ── */}
+      <nav className="nav-header">
         <div className="brand-logo" onClick={() => handleNavigate("home")}>
           Nethro<span className="brand-dot">.</span>Labs
         </div>
-        <div className="nav-links-cluster">
-          <span className="nav-link-item" onClick={() => handleNavigate("home")}>
-            Architecture
-          </span>
-          <span className="nav-link-item" onClick={() => handleNavigate("contact")}>
-            Consultation
-          </span>
-          <button className="btn-secondary" onClick={() => handleNavigate("login")}>
-            Portal Sign In
+
+        <div className="nav-links-group">
+          <button className="nav-link-btn" onClick={() => handleNavigate("home")}>
+            Home
+          </button>
+          <button className="nav-link-btn" onClick={() => handleNavigate("contact")}>
+            Contact
+          </button>
+          <button className="btn-primary" onClick={() => handleNavigate("login")}>
+            Client Login
           </button>
         </div>
       </nav>
@@ -349,7 +365,7 @@ export default function ContactPage({ navigateTo, onNavigate }) {
         <div className="cn-eyebrow">
           <span className="cn-eyebrow-line" />
           Let's Talk
-          <span className="cn-eyebrow-line" />
+          <span className="cn-eyebrow-line right" />
         </div>
         <h1 className="cn-h1">
           Your next project<br />
@@ -365,9 +381,9 @@ export default function ContactPage({ navigateTo, onNavigate }) {
         {/* FORM PANEL */}
         <div className="cn-form-panel">
           {submitted ? (
-            <div className="cn-success" style={{ textAlign: "center", padding: "32px 0" }}>
-              <div style={{ fontSize: 48, color: "#4DFFB4", marginBottom: 16 }}>✓</div>
-              <h3 style={{ fontSize: 24, marginBottom: 12, color: "#F0F8FF" }}>Message received.</h3>
+            <div className="cn-success" style={{ textAlign: "center", padding: "40px 0" }}>
+              <div style={{ fontSize: 56, color: "#4DFFB4", marginBottom: 16 }}>✓</div>
+              <h3 style={{ fontSize: 26, marginBottom: 12, color: "#F0F8FF" }}>Message received.</h3>
               <p style={{ color: "#B8D4E8", fontSize: 15, lineHeight: 1.65 }}>
                 A member of the Nethro Labs engineering team will review your project requirements and follow up within 48 hours.
               </p>
@@ -449,14 +465,14 @@ export default function ContactPage({ navigateTo, onNavigate }) {
           <div className="cn-badge">
             <div className="cn-badge-dot" />
             <p className="cn-badge-text">
-              <span style={{ color: "#4DFFB4", fontWeight: 600 }}>48-hour response guarantee.</span>{" "}
+              <span style={{ color: "#4DFFB4", fontWeight: 700 }}>48-hour response guarantee.</span>{" "}
               Every inquiry gets a real reply from a senior engineer — no auto-responders, no sales scripts.
             </p>
           </div>
         </div>
       </div>
 
-      {/* ── FOOTER (Identical to Homepage) ── */}
+      {/* ── FOOTER ── */}
       <footer className="footer-terminal footer-section">
         <div className="brand-logo" onClick={() => handleNavigate("home")}>
           Nethro<span className="brand-dot">.</span>Labs

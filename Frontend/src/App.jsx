@@ -41,8 +41,8 @@ function NeuralCanvas() {
         if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
 
         ctx.beginPath();
-        ctx.arc(n.x, n.y, n.r + Math.sin(n.pulse) * 0.4, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0, 212, 255, ${0.15 + Math.sin(n.pulse) * 0.05})`;
+        ctx.arc(n.x, n.y, n.r + Math.sin(n.pulse) * 0.5, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(0, 212, 255, 0.55)";
         ctx.fill();
       });
 
@@ -51,13 +51,12 @@ function NeuralCanvas() {
           const dx = nodes[i].x - nodes[j].x;
           const dy = nodes[i].y - nodes[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-
-          if (dist < 110) {
+          if (dist < 130) {
             ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
             ctx.lineTo(nodes[j].x, nodes[j].y);
-            ctx.strokeStyle = `rgba(0, 212, 255, ${0.06 * (1 - dist / 110)})`;
-            ctx.lineWidth = 0.6;
+            ctx.strokeStyle = `rgba(0, 212, 255, ${0.18 * (1 - dist / 130)})`;
+            ctx.lineWidth = 0.8;
             ctx.stroke();
           }
         }
@@ -74,212 +73,235 @@ function NeuralCanvas() {
     };
   }, []);
 
-  return <canvas ref={canvasRef} className="neural-canvas" />;
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        pointerEvents: "none",
+        zIndex: 1,
+      }}
+    />
+  );
 }
 
 function ServiceCard({ service }) {
   return (
-    <div className="service-card-node service-card">
-      <div className="card-header-badge-wrapper">
-        <span className="card-pill-tag">{service.badge}</span>
-      </div>
-      <h3 className="card-heading-label">{service.label}</h3>
-      <p className="card-body-description">{service.desc}</p>
+    <div className="service-item-card">
+      <div style={{ fontSize: "28px", marginBottom: "12px" }}>{service.icon}</div>
+      <h3 className="service-card-title">{service.label}</h3>
+      <p className="service-card-text">{service.description}</p>
     </div>
   );
 }
 
-function InitialPasswordSetup({ token, onSetupSuccess }) {
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const handlePasswordSubmit = async (e) => {
-    e.preventDefault();
-    if (newPassword !== confirmPassword) {
-      setError("Passwords do not match matching criteria.");
-      return;
-    }
-    setLoading(true);
-    setError("");
-
-    try {
-      const response = await fetch("http://localhost:5000/api/auth/setup-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ newPassword }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to update security credentials.");
-      }
-
-      onSetupSuccess();
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+function ProjectCard({ project }) {
   return (
-    <div className="center-dashboard-container">
-      <div className="setup-password-card">
-        <h2 className="setup-card-title">Initialize Security Credentials</h2>
-        <p className="setup-card-subtitle">
-          This is your first terminal login session. Please configure a personal secret password to proceed.
-        </p>
+    <div className="project-item-card">
+      <div>
+        <div className="project-card-header">
+          <span className="project-category">{project.category}</span>
+          <span className="project-badge">✓ {project.status}</span>
+        </div>
+        <h3 className="project-card-title">{project.title}</h3>
+        <p className="project-card-description">{project.description}</p>
+        <div className="project-tech-tags">
+          {project.technologies.map((tech) => (
+            <span key={tech} className="tech-tag">{tech}</span>
+          ))}
+        </div>
+      </div>
 
-        {error && <div className="setup-alert-banner">{error}</div>}
+      <div>
+        <div className="project-metrics-row">
+          <div className="project-metric-item">
+            <span className="metric-val">{project.metric1Value}</span>
+            <span className="metric-lbl">{project.metric1Label}</span>
+          </div>
+          <div className="project-metric-item">
+            <span className="metric-val">{project.metric2Value}</span>
+            <span className="metric-lbl">{project.metric2Label}</span>
+          </div>
+        </div>
 
-        <form onSubmit={handlePasswordSubmit}>
-          <div className="setup-input-wrapper">
-            <label className="setup-field-label">New Secure Password</label>
-            <input
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              className="setup-field-input"
-              placeholder="••••••••"
-              required
-            />
+        {project.link && (
+          <div style={{ marginTop: "16px", textAlign: "right" }}>
+            <a
+              href={project.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-secondary"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                fontSize: "13px",
+                padding: "8px 14px",
+                textDecoration: "none"
+              }}
+            >
+              Visit Live Site ↗
+            </a>
           </div>
-          <div className="setup-input-wrapper-last">
-            <label className="setup-field-label">Confirm New Password</label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="setup-field-input"
-              placeholder="••••••••"
-              required
-            />
-          </div>
-          <button type="submit" disabled={loading} className="btn-primary" style={{ width: "100%" }}>
-            {loading ? "Updating Master Matrix..." : "Save Credentials & Connect"}
-          </button>
-        </form>
+        )}
       </div>
     </div>
   );
 }
 
 export default function App() {
-  const [view, setView] = useState("home");
-  const [currentUser, setCurrentUser] = useState(null);
-  const [authToken, setAuthToken] = useState("");
+  const [currentPage, setCurrentPage] = useState("home");
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
 
-  // Handle browser Back / Forward buttons
-  useEffect(() => {
-    const handlePopState = (e) => {
-      if (e.state && e.state.view) {
-        setView(e.state.view);
-      } else {
-        setView("home");
-      }
-    };
+  const navigateTo = (page) => setCurrentPage(page);
 
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, []);
-
-  const navigateTo = (targetView) => {
-    if (view !== targetView) {
-      window.history.pushState({ view: targetView }, "", `#${targetView}`);
-      setView(targetView);
-    }
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const handleLoginSuccess = (user, token) => {
-    setCurrentUser(user);
-    setAuthToken(token);
-
-    if (user.requiresPasswordReset) {
-      navigateTo("setup-password");
-    } else if (user.role === "admin") {
-      navigateTo("admin-dashboard");
+  const handleLoginSuccess = (userData, userToken) => {
+    setUser(userData);
+    setToken(userToken);
+    if (userData.role === "admin") {
+      setCurrentPage("admin-dashboard");
+    } else if (userData.role === "client") {
+      setCurrentPage("client-dashboard");
     } else {
-      navigateTo("client-dashboard");
+      setCurrentPage("home");
     }
   };
 
   const handleLogout = () => {
-    setCurrentUser(null);
-    setAuthToken("");
-    navigateTo("home");
+    setUser(null);
+    setToken(null);
+    setCurrentPage("login");
   };
 
-  const services = [
-    { label: "Enterprise Web Applications", desc: "Engineering modern, scalable web ecosystems built for heavy operational demand.", badge: "Web Systems" },
-    { label: "Predictive Analytics Systems", desc: "Build enterprise forecast kernels optimized for complex logistical modeling.", badge: "Deep Learning" },
-    { label: "Custom Core Software Architecture", desc: "Construct fully walled, dedicated localized neural and database frameworks.", badge: "Infrastructure" }
-  ];
-
-  if (view === "login") {
-    return (
-      <LoginPage
-        onLoginSuccess={(user, token) => {
-          const checkResponse = arguments[0];
-          if (checkResponse && checkResponse.requiresPasswordReset) {
-            handleLoginSuccess({ ...checkResponse.user, requiresPasswordReset: true }, arguments[1]);
-          } else {
-            handleLoginSuccess(user, token);
-          }
-        }}
-        navigateTo={navigateTo}
-      />
-    );
-  }
-
-  if (view === "contact") {
+  if (currentPage === "contact") {
     return <ContactPage navigateTo={navigateTo} />;
   }
 
-  if (view === "admin-dashboard") {
-    return <AdminDashboard token={authToken} onLogout={handleLogout} />;
+  if (currentPage === "login") {
+    return <LoginPage onLoginSuccess={handleLoginSuccess} navigateTo={navigateTo} />;
   }
 
-  if (view === "setup-password") {
-    return (
-      <InitialPasswordSetup
-        token={authToken}
-        onSetupSuccess={() => navigateTo("client-dashboard")}
-      />
-    );
+  if (currentPage === "admin-dashboard") {
+    if (!token || user?.role !== "admin") {
+      return (
+        <div className="center-dashboard-container">
+          <div className="dashboard-card-fallback">
+            <h2 className="dashboard-fallback-title">Access Denied</h2>
+            <p className="dashboard-fallback-text">
+              You must be logged in as an Administrator to view this terminal.
+            </p>
+            <button className="btn-primary" onClick={() => navigateTo("login")}>
+              Go to Login
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return <AdminDashboard user={user} token={token} onLogout={handleLogout} />;
   }
 
-  if (view === "client-dashboard") {
-    return (
-      <ClientDashboard
-        token={authToken}
-        currentUser={currentUser}
-        onLogout={handleLogout}
-      />
-    );
+  if (currentPage === "client-dashboard") {
+    if (!token || (user?.role !== "client" && user?.role !== "admin")) {
+      return (
+        <div className="center-dashboard-container">
+          <div className="dashboard-card-fallback">
+            <h2 className="dashboard-fallback-title">Access Denied</h2>
+            <p className="dashboard-fallback-text">
+              You must be logged in as a Client to view this dashboard.
+            </p>
+            <button className="btn-primary" onClick={() => navigateTo("login")}>
+              Go to Login
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return <ClientDashboard user={user} token={token} onLogout={handleLogout} />;
   }
+
+  const services = [
+    {
+      icon: "⚡",
+      label: "Custom Web Applications",
+      description: "Scalable React/Node.js enterprise ecosystems engineered for maximum throughput.",
+    },
+    {
+      icon: "🔒",
+      label: "Cybersecurity & Audit",
+      description: "In-depth application vulnerability assessments, penetration testing, and access protocols.",
+    },
+    {
+      icon: "☁️",
+      label: "Cloud Architecture",
+      description: "Resilient microservices, database cluster orchestration, and serverless infrastructure.",
+    },
+  ];
+
+  const completedProjects = [
+    {
+      title: "AlumniVantage Ecosystem",
+      category: "Enterprise Platform",
+      status: "Delivered",
+      description: "Secure university alumni portal featuring domain-restricted authentication, profile management, and career networks.",
+      technologies: ["React", "Node.js", "MongoDB", "JWT"],
+      metric1Label: "Verified Users",
+      metric1Value: "12,500+",
+      metric2Label: "Auth Speed",
+      metric2Value: "< 25ms",
+    },
+    {
+      title: "TanColorize AI Engine",
+      category: "Deep Learning & Computer Vision",
+      status: "Production",
+      description: "Fair and balanced deep learning colorization model tailored for diverse skin tones and high-fidelity photo restoration.",
+      technologies: ["PyTorch", "GANs", "Python", "FastAPI"],
+      metric1Label: "Accuracy Rate",
+      metric1Value: "98.4%",
+      metric2Label: "Processing",
+      metric2Value: "1.2s / Image",
+    },
+    {
+      title: "Petra Constructions Platform",
+      category: "Civil Engineering & Enterprise Web",
+      status: "Live Project",
+      description: "Full-scale corporate platform for Petra Constructions showcasing architectural portfolios, engineering services, and digital project inquiries.",
+      technologies: ["React", "Node.js", "REST APIs", "Tailwind CSS"],
+      metric1Label: "Completed Works",
+      metric1Value: "50+ Projects",
+      metric2Label: "Load Speed",
+      metric2Value: "< 1.2s",
+      link: "https://petraconstructions.lk/",
+    },
+  ];
 
   return (
     <div className="app-container">
       <NeuralCanvas />
 
-      {/* ── NAVBAR ── */}
-      <nav className="navbar-hub">
+      {/* ── NAVIGATION HEADER ── */}
+      <nav className="nav-header">
         <div className="brand-logo" onClick={() => navigateTo("home")}>
           Nethro<span className="brand-dot">.</span>Labs
         </div>
-        <div className="nav-links-cluster">
-          <span className="nav-link-item" onClick={() => navigateTo("home")}>Architecture</span>
-          <span className="nav-link-item" onClick={() => navigateTo("contact")}>Consultation</span>
-          <button className="btn-secondary" onClick={() => navigateTo("login")}>
-            Portal Sign In
-          </button>
+
+        <div className="nav-links-group">
+          <button className="nav-link-btn" onClick={() => navigateTo("home")}>Home</button>
+          <button className="nav-link-btn" onClick={() => navigateTo("contact")}>Contact</button>
+          {user ? (
+            <button
+              className="btn-primary"
+              onClick={() => navigateTo(user.role === "admin" ? "admin-dashboard" : "client-dashboard")}
+            >
+              Workspace Terminal
+            </button>
+          ) : (
+            <button className="btn-primary" onClick={() => navigateTo("login")}>Client Login</button>
+          )}
         </div>
       </nav>
 
@@ -298,72 +320,67 @@ export default function App() {
             <button className="btn-primary" onClick={() => navigateTo("contact")}>
               Initialize Project Proposal
             </button>
+            <button className="btn-secondary" onClick={() => navigateTo("login")}>
+              Access Portal
+            </button>
+          </div>
+        </div>
+
+        {/* ── HERO RIGHT GRAPHIC CARD ── */}
+        <div className="hero-graphic-card">
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
+            <span className="card-pill-tag">System Terminal v2.4</span>
+            <span style={{ color: "#10B981", fontSize: "13px", fontWeight: "600" }}>● Core Online</span>
+          </div>
+
+          <p style={{ color: "#F3F4F6", fontSize: "15px", fontWeight: "600", margin: "0 0 8px 0" }}>
+            Enterprise System Deployment
+          </p>
+          <p style={{ color: "#9CA3AF", fontSize: "13px", margin: 0 }}>
+            High-reliability cloud architecture monitoring active client environments.
+          </p>
+
+          <div className="hero-stat-grid">
+            <div className="hero-stat-node">
+              <span className="hero-stat-value">99.9%</span>
+              <span className="hero-stat-label">Platform Uptime</span>
+            </div>
+            <div className="hero-stat-node">
+              <span className="hero-stat-value">&lt; 40ms</span>
+              <span className="hero-stat-label">Core Latency</span>
+            </div>
+            <div className="hero-stat-node">
+              <span className="hero-stat-value">Active</span>
+              <span className="hero-stat-label">Security Shield</span>
+            </div>
+            <div className="hero-stat-node">
+              <span className="hero-stat-value">24/7</span>
+              <span className="hero-stat-label">Node Operations</span>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* ── FLAGSHIP PROJECT SHOWCASE ── */}
-      <div className="matrix-section" style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.08)" }}>
-        <div className="matrix-wrapper">
-          <div className="pill-badge" style={{ marginBottom: "12px" }}>Flagship Deployment</div>
-          <h2 className="section-main-title">Project Petra Constructions</h2>
-          <p className="section-sub-title">
-            Nethro Labs' debut production deployment—an enterprise web solution developed for Petra Constructions, empowering their digital presence and civil engineering project showcases.
+      {/* ── FEATURED DELIVERED PROJECTS ── */}
+      <div className="projects-section">
+        <div className="section-inner-container">
+          <h2 className="section-heading-title">Delivered Projects & Systems</h2>
+          <p className="section-supporting-subtext">
+            Explore recent enterprise software deployments, full-stack web platforms, and deep learning engines built by Nethro Labs.
           </p>
-
-          <div style={{
-            background: "rgba(10, 15, 25, 0.7)",
-            border: "1px solid rgba(0, 212, 255, 0.2)",
-            borderRadius: "12px",
-            padding: "32px",
-            marginTop: "24px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "20px"
-          }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
-              <div>
-                <span className="card-pill-tag">Production Live</span>
-                <h3 style={{ fontSize: "1.5rem", marginTop: "8px", color: "#fff" }}>Petra Constructions Web Portal</h3>
-              </div>
-              <a 
-                href="https://www.petraconstructions.lk/" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="btn-primary"
-                style={{ textDecoration: "none" }}
-              >
-                Launch Platform ↗
-              </a>
-            </div>
-            
-            <p className="card-body-description" style={{ fontSize: "1rem" }}>
-              Designed and built from the ground up to support modern civil engineering visual presentation, structured client inquiries, and high performance content delivery.
-            </p>
-
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "16px", marginTop: "12px" }}>
-              <div style={{ padding: "12px", background: "rgba(255, 255, 255, 0.03)", borderRadius: "8px" }}>
-                <strong style={{ color: "#00d4ff", display: "block" }}>Domain</strong>
-                <span style={{ fontSize: "0.9rem", color: "#a0aec0" }}>Civil & Infrastructure</span>
-              </div>
-              <div style={{ padding: "12px", background: "rgba(255, 255, 255, 0.03)", borderRadius: "8px" }}>
-                <strong style={{ color: "#00d4ff", display: "block" }}>Stack</strong>
-                <span style={{ fontSize: "0.9rem", color: "#a0aec0" }}>Modern Web & Cloud Integration</span>
-              </div>
-              <div style={{ padding: "12px", background: "rgba(255, 255, 255, 0.03)", borderRadius: "8px" }}>
-                <strong style={{ color: "#00d4ff", display: "block" }}>Status</strong>
-                <span style={{ fontSize: "0.9rem", color: "#a0aec0" }}>Active & Managed</span>
-              </div>
-            </div>
+          <div className="projects-grid-layout">
+            {completedProjects.map((p) => (
+              <ProjectCard key={p.title} project={p} />
+            ))}
           </div>
         </div>
       </div>
 
-      {/* ── SERVICES MATRIX ── */}
-      <div className="matrix-section">
-        <div className="matrix-wrapper">
-          <h2 className="section-main-title">Foundational Capabilities</h2>
-          <p className="section-sub-title">
+      {/* ── SERVICES ── */}
+      <div className="services-section">
+        <div className="section-inner-container">
+          <h2 className="section-heading-title">Engineering Capabilities</h2>
+          <p className="section-supporting-subtext">
             We build robust, tailored software solutions across diverse industries, bringing precision and scale to every enterprise architecture.
           </p>
           <div className="services-grid-layout">

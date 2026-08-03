@@ -32,7 +32,6 @@ const sendTokenResponse = (user, statusCode, res, extraFields = {}) => {
   });
 };
 
-// Admin endpoint to register new users/clients
 export const register = async (req, res, next) => {
   try {
     const { name, email, password, role } = req.body;
@@ -42,7 +41,6 @@ export const register = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Email already registered' });
     }
 
-    // New users default to isFirstLogin: true
     const user = await User.create({
       name,
       email,
@@ -57,7 +55,6 @@ export const register = async (req, res, next) => {
   }
 };
 
-// Login endpoint
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -71,13 +68,12 @@ export const login = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
-    // Intercept login if first-time user needs a password reset
-    if (user.isFirstLogin) {
+    if (user.role === 'client' && user.isFirstLogin) {
       return res.status(200).json({
         success: true,
         requiresPasswordReset: true,
         message: 'First time login detected. Password modification required.',
-        token: signToken(user._id, user.role), // Token supplied to authorize setup-password route
+        token: signToken(user._id, user.role),
         user: {
           id: user._id,
           name: user.name,
@@ -94,7 +90,6 @@ export const login = async (req, res, next) => {
   }
 };
 
-// Endpoint for setting initial new password
 export const setupInitialPassword = async (req, res, next) => {
   try {
     const { newPassword } = req.body;
@@ -108,7 +103,6 @@ export const setupInitialPassword = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    // Update password and clear first login flag
     user.password = newPassword;
     user.isFirstLogin = false;
     await user.save();

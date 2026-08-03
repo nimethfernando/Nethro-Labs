@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema(
     },
     isFirstLogin: {
       type: Boolean,
-      default: true, // Automatically flags new accounts for first-login reset
+      default: true,
     },
     isVerified: {
       type: Boolean,
@@ -33,7 +33,6 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Pre-save hook to handle password hashing
 userSchema.pre('save', async function () {
   if (!this.isModified('password')) return;
 
@@ -45,7 +44,6 @@ userSchema.pre('save', async function () {
   }
 });
 
-// Instance method to check password match
 userSchema.methods.matchPasswords = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };

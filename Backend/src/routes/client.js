@@ -10,7 +10,7 @@ router.use(restrictTo('client', 'admin'));
 router.get('/dashboard', (req, res) => {
   res.status(200).json({
     success: true,
-    message: 'Welcome to Client Dashboard',
+    message: 'Welcome to Client Dashboard Terminal',
     user: req.user,
   });
 });

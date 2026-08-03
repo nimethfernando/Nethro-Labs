@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./LoginPage.css"; // Uses your existing styling classes
+import "./LoginPage.css";
 
 export default function LoginPage({ onLoginSuccess, navigateTo }) {
   const [email, setEmail] = useState("");
@@ -13,7 +13,6 @@ export default function LoginPage({ onLoginSuccess, navigateTo }) {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // Step 1: Initial Login Handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -41,7 +40,6 @@ export default function LoginPage({ onLoginSuccess, navigateTo }) {
         return;
       }
 
-      // Standard Login Success
       onLoginSuccess(data.user, data.token);
     } catch (err) {
       setError(err.message);
@@ -50,7 +48,6 @@ export default function LoginPage({ onLoginSuccess, navigateTo }) {
     }
   };
 
-  // Step 2: First-Time Password Reset Handler
   const handlePasswordReset = async (e) => {
     e.preventDefault();
     setError("");
@@ -83,7 +80,6 @@ export default function LoginPage({ onLoginSuccess, navigateTo }) {
         throw new Error(data.message || "Password update failed.");
       }
 
-      // Pass user and newly issued token to main login handler
       onLoginSuccess(data.user, data.token);
     } catch (err) {
       setError(err.message);

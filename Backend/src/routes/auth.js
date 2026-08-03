@@ -6,8 +6,6 @@ const router = express.Router();
 
 router.post('/register', register);
 router.post('/login', login);
-
-// Route for clients updating their common default password on first login
 router.post('/setup-password', protect, setupInitialPassword);
 
 export default router;
