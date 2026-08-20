@@ -34,7 +34,7 @@ export default function ClientDashboard({ token, onLogout, currentUser }) {
     };
 
     if (token) fetchClientData();
-    
+     
   }, [token]);
 
   return (
