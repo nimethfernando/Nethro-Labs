@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import emailjs from "@emailjs/browser";
+import { Mascot } from "mascotz/react";
 
 // ── Neural Network Canvas ──────────────────────────────────────────────────
 function NeuralCanvas() {
@@ -152,6 +153,7 @@ export default function ContactPage({ navigateTo, onNavigate }) {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [mascotShades, setMascotShades] = useState(false);
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -160,6 +162,16 @@ export default function ContactPage({ navigateTo, onNavigate }) {
     service: "",
     message: "",
   });
+
+  const contactMascotMood = submitted
+    ? "happy"
+    : loading
+    ? "thinking"
+    : error
+    ? "dizzy"
+    : focused
+    ? "curious"
+    : "idle";
 
   const set = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
@@ -362,9 +374,6 @@ export default function ContactPage({ navigateTo, onNavigate }) {
           <button className="nav-link-btn" onClick={() => handleNavigate("contact")}>
             Contact
           </button>
-          <button className="btn-primary" onClick={() => handleNavigate("login")}>
-            Client Login
-          </button>
         </div>
       </nav>
 
@@ -391,16 +400,50 @@ export default function ContactPage({ navigateTo, onNavigate }) {
         <div className="cn-form-panel">
           {submitted ? (
             <div className="cn-success" style={{ textAlign: "center", padding: "40px 0" }}>
-              <div style={{ fontSize: 56, color: "#4DFFB4", marginBottom: 16 }}>✓</div>
-              <h3 style={{ fontSize: 26, marginBottom: 12, color: "#F0F8FF" }}>Message received.</h3>
+              <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
+                <Mascot
+                  seed="nethro-success"
+                  mood="happy"
+                  sunglasses={true}
+                  size={110}
+                  color="#4DFFB4"
+                />
+              </div>
+              <h3 style={{ fontSize: 26, marginBottom: 12, color: "#F0F8FF" }}>Message received!</h3>
               <p style={{ color: "#B8D4E8", fontSize: 15, lineHeight: 1.65 }}>
                 A member of the Nethro Labs engineering team will review your project requirements and follow up within 48 hours.
               </p>
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
-              <div className="cn-panel-eyebrow">Send a Message</div>
-              <div className="cn-panel-title">Tell us about your project</div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+                <div>
+                  <div className="cn-panel-eyebrow">Send a Message</div>
+                  <div className="cn-panel-title" style={{ marginBottom: 0 }}>Tell us about your project</div>
+                </div>
+                <div
+                  onClick={() => setMascotShades((s) => !s)}
+                  title="Click to toggle mascot shades!"
+                  style={{
+                    cursor: "pointer",
+                    transition: "transform 0.2s ease",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                >
+                  <Mascot
+                    seed="nethro-consult"
+                    mood={contactMascotMood}
+                    sunglasses={mascotShades}
+                    size={80}
+                    color="#00D4FF"
+                  />
+                  <span style={{ fontSize: "11px", color: "#00D4FF", opacity: 0.8, fontFamily: "monospace", marginTop: "4px" }}>
+                    {loading ? "transmitting..." : "consultant bot"}
+                  </span>
+                </div>
+              </div>
 
               {error && <div className="cn-error-banner">{error}</div>}
 

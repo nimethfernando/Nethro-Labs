@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { Mascot } from "mascotz/react";
 import "./LoginPage.css";
 
 export default function LoginPage({ onLoginSuccess, navigateTo }) {
@@ -6,12 +7,40 @@ export default function LoginPage({ onLoginSuccess, navigateTo }) {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [focusedField, setFocusedField] = useState(null);
+  const [shades, setShades] = useState(false);
 
   // First-time reset state
   const [isResetStep, setIsResetStep] = useState(false);
   const [tempToken, setTempToken] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const emailRef = useRef(null);
+
+  let mascotMood = "idle";
+  if (loading) {
+    mascotMood = "thinking";
+  } else if (error) {
+    mascotMood = "dizzy";
+  } else if (
+    focusedField === "password" ||
+    focusedField === "newPassword" ||
+    focusedField === "confirmPassword"
+  ) {
+    mascotMood = "shy";
+  } else if (focusedField === "email") {
+    mascotMood = "curious";
+  }
+
+  const lookTarget =
+    focusedField === "password" ||
+    focusedField === "newPassword" ||
+    focusedField === "confirmPassword"
+      ? null
+      : focusedField === "email"
+      ? emailRef
+      : "cursor";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -95,6 +124,31 @@ export default function LoginPage({ onLoginSuccess, navigateTo }) {
           Nethro<span className="login-brand-dot">.</span>Labs
         </div>
 
+        {/* ── INTERACTIVE MASCOT SENTINEL ── */}
+        <div
+          className="login-mascot-wrapper"
+          onClick={() => setShades((prev) => !prev)}
+          title="Click to toggle terminal shades!"
+        >
+          <Mascot
+            seed="NethroTerminal"
+            mood={mascotMood}
+            lookAt={lookTarget}
+            sunglasses={shades}
+            size={96}
+            color="#00D4FF"
+          />
+          <div className="login-mascot-hint">
+            {mascotMood === "shy"
+              ? "🫣 Looking away for privacy..."
+              : mascotMood === "thinking"
+              ? "⚡ Verifying cryptographic credentials..."
+              : mascotMood === "dizzy"
+              ? "⚠️ Security challenge encountered"
+              : "● Terminal Sentinel Active (click for shades)"}
+          </div>
+        </div>
+
         {!isResetStep ? (
           <>
             <h2 className="login-title">Portal Identity Access</h2>
@@ -106,9 +160,12 @@ export default function LoginPage({ onLoginSuccess, navigateTo }) {
               <div className="login-input-group">
                 <label className="login-label">Corporate Email Address</label>
                 <input
+                  ref={emailRef}
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onFocus={() => setFocusedField("email")}
+                  onBlur={() => setFocusedField(null)}
                   className="login-input"
                   placeholder="name@nethrolabs.com"
                   required
@@ -121,6 +178,8 @@ export default function LoginPage({ onLoginSuccess, navigateTo }) {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  onFocus={() => setFocusedField("password")}
+                  onBlur={() => setFocusedField(null)}
                   className="login-input"
                   placeholder="••••••••"
                   required
@@ -146,6 +205,8 @@ export default function LoginPage({ onLoginSuccess, navigateTo }) {
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
+                  onFocus={() => setFocusedField("newPassword")}
+                  onBlur={() => setFocusedField(null)}
                   className="login-input"
                   placeholder="••••••••"
                   required
@@ -158,6 +219,8 @@ export default function LoginPage({ onLoginSuccess, navigateTo }) {
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
+                  onFocus={() => setFocusedField("confirmPassword")}
+                  onBlur={() => setFocusedField(null)}
                   className="login-input"
                   placeholder="••••••••"
                   required

@@ -3,6 +3,8 @@ import ContactPage from "./ContactPage";
 import LoginPage from "./components/LoginPage";
 import AdminDashboard from "./components/AdminDashboard";
 import ClientDashboard from "./components/ClientDashboard";
+import MascotsLab from "./components/MascotsLab";
+import { Mascot } from "mascotz/react";
 import "./App.css";
 
 function NeuralCanvas() {
@@ -157,6 +159,7 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState("home");
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
+  const [heroMascotShades, setHeroMascotShades] = useState(false);
 
   const navigateTo = (page) => setCurrentPage(page);
 
@@ -291,6 +294,15 @@ export default function App() {
 
         <div className="nav-links-group">
           <button className="nav-link-btn" onClick={() => navigateTo("home")}>Home</button>
+          <button
+            className="nav-link-btn"
+            onClick={() => {
+              const el = document.getElementById("mascots-lab");
+              if (el) el.scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            Mascots Lab
+          </button>
           <button className="nav-link-btn" onClick={() => navigateTo("contact")}>Contact</button>
           {user ? (
             <button
@@ -328,17 +340,34 @@ export default function App() {
 
         {/* ── HERO RIGHT GRAPHIC CARD ── */}
         <div className="hero-graphic-card">
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
             <span className="card-pill-tag">System Terminal v2.4</span>
             <span style={{ color: "#10B981", fontSize: "13px", fontWeight: "600" }}>● Core Online</span>
           </div>
 
-          <p style={{ color: "#F3F4F6", fontSize: "15px", fontWeight: "600", margin: "0 0 8px 0" }}>
-            Enterprise System Deployment
-          </p>
-          <p style={{ color: "#9CA3AF", fontSize: "13px", margin: 0 }}>
-            High-reliability cloud architecture monitoring active client environments.
-          </p>
+          <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "18px" }}>
+            <div
+              style={{ cursor: "pointer", filter: "drop-shadow(0 4px 18px rgba(0, 212, 255, 0.35))", flexShrink: 0 }}
+              title="Click to toggle terminal shades!"
+              onClick={() => setHeroMascotShades((s) => !s)}
+            >
+              <Mascot
+                seed="NethroTerminal"
+                mood="curious"
+                sunglasses={heroMascotShades}
+                size={80}
+                color="#00D4FF"
+              />
+            </div>
+            <div>
+              <p style={{ color: "#F3F4F6", fontSize: "15px", fontWeight: "600", margin: "0 0 4px 0" }}>
+                Autonomous Interface Core
+              </p>
+              <p style={{ color: "#9CA3AF", fontSize: "13px", margin: 0, lineHeight: 1.4 }}>
+                Interactive intelligent mascots reacting to live user events & cursor physics.
+              </p>
+            </div>
+          </div>
 
           <div className="hero-stat-grid">
             <div className="hero-stat-node">
@@ -391,8 +420,14 @@ export default function App() {
         </div>
       </div>
 
+      {/* ── INTERACTIVE MASCOTS LAB (POWERED BY MASCOTZ) ── */}
+      <MascotsLab navigateTo={navigateTo} />
+
       {/* ── CTA ── */}
       <div className="cta-strip-panel cta-section">
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
+          <Mascot seed="NethroResilient" mood="happy" sunglasses={true} size={100} color="#4DFFB4" />
+        </div>
         <h2 className="cta-heading-title">
           Ready to build something<br />
           <span className="cta-title-accent">resilient?</span>
